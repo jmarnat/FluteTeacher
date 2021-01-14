@@ -3,22 +3,17 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
 
-
-class SheetGrapher(QWidget):
+class Staff(QWidget):
     def __init__(self, kind='normal'):
-        super(SheetGrapher, self).__init__()
+        super(Staff, self).__init__()
         self.height()
         self.notes = []
-
 
         self.qimages = {
             'sharp': QImage('res/sharp.png'),
             'flat': QImage('res/flat.png'),
             'g-clef': QImage('res/g-clef.png')
         }
-        # self.image_sharp = QImage('res/sharp.png')
-        # self.image_flat = QImage('res/flat.png')
-        # self.image_g_clef = QImage('res/g-clef.png')
         self.kind = kind
 
     def mid_height(self):
@@ -45,8 +40,7 @@ class SheetGrapher(QWidget):
 
         for i in [-2, -1, 0, 1, 2]:
             ypos = int(self.mid_height() - (i * self.il()))
-            xpos = int(self.width() / 2)
-            qp.drawLine(0, ypos, xpos+100, ypos)
+            qp.drawLine(0, ypos, self.width(), ypos)
 
         xdec = -50
         for (note, alt) in self.notes:

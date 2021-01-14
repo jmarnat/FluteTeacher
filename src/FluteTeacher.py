@@ -1,7 +1,8 @@
 from PyQt5.QtWidgets import *
-from .SheetGrapher import SheetGrapher
+from .Staff import Staff
 from .Note import Note
 from .Fingering import Fingering
+
 
 class FluteTeacher:
     def __init__(self, width=800, height=600):
@@ -19,10 +20,12 @@ class FluteTeacher:
         self._top_row = QGroupBox()
         self._top_row_layout = QHBoxLayout()
         self._top_row.setLayout(self._top_row_layout)
-        self._sheet_grapher_left = SheetGrapher(kind='normal')
-        self._top_row_layout.addWidget(self._sheet_grapher_left)
-        self._sheet_grapher_right = SheetGrapher(kind='normal')
-        self._top_row_layout.addWidget(self._sheet_grapher_right)
+
+        self._left_staff = Staff(kind='normal')
+        self._top_row_layout.addWidget(self._left_staff)
+
+        self._right_staff = Staff(kind='normal')
+        self._top_row_layout.addWidget(self._right_staff)
 
         # second row
         self.fingering = Fingering()
@@ -32,6 +35,7 @@ class FluteTeacher:
         self._bottom_row_layout = QHBoxLayout()
         self._bottom_row.setLayout(self._bottom_row_layout)
         self._next_button = QPushButton('next')
+        # self._next_button.setFixedHeight(100)
         self._next_button.clicked.connect(self.next_note)
         self._bottom_row_layout.addWidget(self._next_button)
 
@@ -49,6 +53,6 @@ class FluteTeacher:
     def next_note(self):
         self.last_note = Note.random(difficulty=1, lastNote=self.last_note)
         note, alt = self.last_note.to_graph()
-        self._sheet_grapher_left.display_note(note, alt)
+        self._left_staff.display_note(note, alt)
         self.fingering.set_fingering(self.last_note.a4index)
 
