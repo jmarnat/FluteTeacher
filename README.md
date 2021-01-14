@@ -6,7 +6,7 @@ Here is a screenshot of the actual version:
 ## Features:
 ### Sure:
 - [x] main window with 3 rows
-- [x] "next" note button
+- [x] `next` (note) button
 - [x] upper-left staff draw
 - [x] upper-left note respondive draw
 - [x] note correspondance between text / drawn / A4-indexed
@@ -17,6 +17,11 @@ Here is a screenshot of the actual version:
 - [ ] note recognition based on FFT &rarr; threaded?
 - [ ] recognized note display
 - [ ] automatic note validation
+
+### For compilation:
+- [ ] check requirements
+- [ ] compile on MacOS
+- [ ] compile on Windows 10
 
 ### Maybe:
 - [ ] adding register information + draw ?
