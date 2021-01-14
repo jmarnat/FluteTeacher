@@ -1,6 +1,9 @@
 # MacOS
 *.DS_store
 
+# Idea:
+*.idea
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
