@@ -1,0 +1,5 @@
+pyaudio
+Wave
+numpy
+scipy
+PyQt5
