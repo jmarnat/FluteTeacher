@@ -14,7 +14,9 @@ Here is a screenshot of the actual version:
 - [x] corresp note number -> correct true note
 - [x] upper right basic draw
 - [x] flute draw
-- [ ] note recognition based on FFT &rarr; threaded?
+- [x] note recognition based on FFT &rarr;
+- [ ] HearAI: continuous listening
+- [ ] on HearAI: no note if SNR < threshold
 - [ ] recognized note display
 - [ ] automatic note validation
 

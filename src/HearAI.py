@@ -4,9 +4,9 @@ import sys
 import numpy as np
 
 from scipy.fft import fft
+from .Note import Note
 
-
-class SampleRecorder:
+class HearAI:
     def __init__(self,
                  rate=44100,
                  chunk=1024,
@@ -74,7 +74,7 @@ class SampleRecorder:
                 return note
         return None
 
-    def get_last_note(self):
+    def get_last_note(self, alt='#'):
         """
             (f0, note, name) with:
             f0:   FFT main frequency
@@ -94,23 +94,8 @@ class SampleRecorder:
         if name is None:
             return f0, note, None
 
-        return f0, note, name
-
-    # def save(self, path):
-    #     if not path.lower().endswith('.wav'):
-    #         print('ERROR: file extension should be .wav', file=sys.stderr)
-    #         return None
-    #     wf = wave.open(path, 'wb')
-    #     wf.setnchannels(self._channels)
-    #     wf.setsampwidth(p.get_sample_size(self._audio_format))
-    #     wf.setframerate(self._rate)
-    #     wf.writeframes(b''.join(self._last_frames))
-    #     wf.close()
-
-    # def plot(self, figsize=(20, 4)):
-    #     fig, ax = plt.subplots(figsize=figsize)
-    #     rec16 = self.last_rec()
-    #     ax.plot(rec16)
+        note_obj = Note(a4index=note, alt=alt)
+        return f0, note_obj, name
 
     def close(self):
         self._stream.close()

@@ -23,8 +23,8 @@ class Staff(QWidget):
         """inter-line height"""
         return self.height() / 12
 
-    def display_note(self, val, alt):
-        self.notes = [(val, alt)]
+    def display_note(self, b_index, alt):
+        self.notes = [(b_index, alt)]
         self.repaint()
 
     def paintEvent(self, event):
