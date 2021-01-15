@@ -8,6 +8,10 @@ Here is a screenshot of the actual version:
 - [ ] add training mode in GUI
 - [ ] add scale selection in GUI
 - [ ] add french translation
+- [ ] finish notes
+- [ ] add minor scales
+- [ ] add harmonic-minor scales
+- [ ] add melodic-minor scales
 
 ### For compilation:
 - [ ] check requirements

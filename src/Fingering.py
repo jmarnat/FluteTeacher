@@ -26,6 +26,10 @@ class Fingering(QWidget):
             71: {'left': [2, 3], 'right': [6]},  # B  4
             72: {'left': [3], 'right': [6]},  # C  5
             73: {'left': [], 'right': [6]},  # Db 5
+            74: {'left': [2, 4, 5], 'right': [1, 3, 5, 6]},  # D5
+            75: {'left': [2, 4, 5], 'right': [1, 3, 5]},  # Eb5
+            76: {'left': [2, 4, 5], 'right': [1, 3, 6]},  # E5
+            77: {'left': [2, 4, 5], 'right': [1, 6]},  # F5
         }
 
         self.hands_colors = HANDS_COLORS_3

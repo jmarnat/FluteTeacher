@@ -144,9 +144,7 @@ class FluteTeacher:
         elif self._note_mode == FluteTeacher.NOTE_MODE_RANDOM_2:
             self._current_note = Note.random_note(difficulty=2, last_note=self._current_note)
         elif self._note_mode == FluteTeacher.NOTE_MODE_SCALE:
-            self._current_note = self._scale_manager.get_arp_note()
-            if self._scale_manager.is_arp_done():
-                self._scale_manager.reset_arp()
+            self._current_note = self._scale_manager.next_arp_note()
         else:
             exit(0)
 
@@ -154,10 +152,8 @@ class FluteTeacher:
             print('ERROR: NEW NOTE IS NONE')
             exit(0)
         else:
-            print('note:', self._current_note)
             print('note_str:', self._current_note.to_str())
 
-        # print('next note is: {}'.format(self._current_note.to_str()))
         self._left_staff.display_note(self._current_note)
         self.fingering.set_fingering(self._current_note)
 
