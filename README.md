@@ -1,7 +1,7 @@
 # FluteTeacher
 I've made myself a Artificial Flute Teacher!
 Here is a screenshot of the actual version:
-![Screen1](doc_res/screen1.png)
+![Screen1](doc_res/screen2.png)
 
 ## Features:
 ### Sure:
