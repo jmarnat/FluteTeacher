@@ -5,12 +5,8 @@ Here is a screenshot of the actual version:
 
 ## Features:
 ### Sure:
-- [ ] add "practice mode" selection
-- [ ] change "normal mode" to "random notes"
-- [ ] add "scale and modes practice" :
-    - both "base" scales = C major, ...
-    - and advanced modes = D dorian, locrian, ...
-- [ ] add scale yaml file?
+- [ ] add training mode in GUI
+- [ ] add scale selection in GUI
 - [ ] add french translation
 
 ### For compilation:
@@ -40,3 +36,6 @@ Here is a screenshot of the actual version:
 - [x] on HearAI: no note if SNR < threshold &rarr; set with volume only
 - [x] recognized note display
 - [x] automatic note validation
+- [x] add "practice mode" selection
+- [x] change "normal mode" to "random notes"
+- [x] add "scale and modes practice" :
