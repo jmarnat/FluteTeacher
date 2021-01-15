@@ -5,20 +5,13 @@ Here is a screenshot of the actual version:
 
 ## Features:
 ### Sure:
-- [x] main window with 3 rows
-- [x] `next` (note) button
-- [x] upper-left staff draw
-- [x] upper-left note respondive draw
-- [x] note correspondance between text / drawn / A4-indexed
-- [x] add sharp and flat symbols
-- [x] corresp note number -> correct true note
-- [x] upper right basic draw
-- [x] flute draw
-- [x] note recognition based on FFT &rarr;
-- [ ] HearAI: continuous listening
-- [ ] on HearAI: no note if SNR < threshold
-- [ ] recognized note display
-- [ ] automatic note validation
+- [ ] add "practice mode" selection
+- [ ] change "normal mode" to "random notes"
+- [ ] add "scale and modes practice" :
+    - both "base" scales = C major, ...
+    - and advanced modes = D dorian, locrian, ...
+- [ ] add scale yaml file?
+- [ ] add french translation
 
 ### For compilation:
 - [ ] check requirements
@@ -31,3 +24,19 @@ Here is a screenshot of the actual version:
 - [ ] add tuning setting
 - [ ] add visual tuner
 - [ ] better drawings?
+
+### Done:
+- [x] main window with 3 rows
+- [x] `next` (note) button
+- [x] upper-left staff draw
+- [x] upper-left note respondive draw
+- [x] note correspondance between text / drawn / A4-indexed
+- [x] add sharp and flat symbols
+- [x] corresp note number -> correct true note
+- [x] upper right basic draw
+- [x] flute draw
+- [x] note recognition based on FFT &rarr;
+- [x] HearAI: continuous listening
+- [x] on HearAI: no note if SNR < threshold &rarr; set with volume only
+- [x] recognized note display
+- [x] automatic note validation

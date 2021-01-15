@@ -2,11 +2,10 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
-# COLOR_LEFT_HAND = 'blue'
-# COLOR_RIGHT_HAND = ''
 HANDS_COLORS_1 = {'left': 'blue', 'right': 'red'}
 HANDS_COLORS_2 = {'left': 'blue', 'right': 'blue'}
 HANDS_COLORS_3 = {'left': 'black', 'right': 'black'}
+
 
 class Fingering(QWidget):
     def __init__(self):
@@ -14,7 +13,7 @@ class Fingering(QWidget):
         self.keys = []
         self.a4index_fingerings = {
             -9: {'left': [2, 3, 4, 5], 'right': [1, 3, 5, 8]},  # C  4
-            -8: {'left': [2, 3, 4, 5], 'right': [1, 3, 5, 7]},  # Db 4
+            -8: {'left': [2, 3, 4, 5], 'right': [1, 3, 5, 6]},  # Db 4
             -7: {'left': [2, 3, 4, 5], 'right': [1, 3, 5]},  # D  4
             -6: {'left': [2, 3, 4, 5], 'right': [1, 3, 5, 6]},  # Eb 4
             -5: {'left': [2, 3, 4, 5], 'right': [1, 3, 6]},  # E  4
@@ -36,7 +35,7 @@ class Fingering(QWidget):
             self.keys = self.a4index_fingerings[a4index]
         except IndexError:
             self.keys = []
-        self.repaint()
+        self.update()
 
     def _get_color(self, n, hand):
         if hand in ['left', 'right']:

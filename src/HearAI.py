@@ -1,20 +1,22 @@
 import pyaudio
-import wave
 import sys
 import numpy as np
 
 from scipy.fft import fft
 from .Note import Note
 
+
 class HearAI:
     def __init__(self,
                  rate=44100,
                  chunk=1024,
-                 channels=1):
+                 channels=1,
+                 audio_threshold=100):
         self._rate = rate
         self._chunk = chunk
         self._channels = channels
         self._audio_format = pyaudio.paInt16
+        self._audio_threshold = audio_threshold
 
         self._pyaudio = pyaudio.PyAudio()
         self._stream = self._pyaudio.open(format=self._audio_format,
@@ -35,7 +37,6 @@ class HearAI:
             self._notes_freqs[i] = (bound_l, bound_r)
 
     def record(self, millis=200):
-        # length_secs = ((millis + 10) / 1000)
         length_secs = millis / 1000
         self._stream.start_stream()
         self._last_frames = []
@@ -45,7 +46,7 @@ class HearAI:
             self._last_frames.append(data)
         self._stream.stop_stream()
 
-        return  # self._last_frames.copy()
+        return
 
     def last_rec(self):
         if not self._last_frames:
@@ -58,11 +59,17 @@ class HearAI:
         q1 = len(full_sample) // 4
         q3 = 3 * q1
         sample = full_sample[q1:q3]
+
+        abs_q3 = np.quantile(sample, 0.75)
+        if abs_q3 < self._audio_threshold:
+            return None
+
         n_samples = len(sample)
         sample_duration = 1 / self._rate
         res_fft_bis = fft(sample)
         res_fft = np.abs(res_fft_bis[:n_samples // 2])
         f0 = np.argmax(res_fft) / (n_samples * sample_duration)
+
         return f0
 
     def _note_fullname(self, note):
@@ -80,22 +87,21 @@ class HearAI:
             f0:   FFT main frequency
             note: corresponding note if found (with respect to A4=440Hz)
             name: name of the note
-
         """
+
         f0 = self.last_rec_f0()
         if f0 is None:
             return None
 
         note = self._get_note(f0)
         if note is None:
-            return f0, None, None
+            return None
 
         name = self._note_fullname(note)
         if name is None:
-            return f0, note, None
+            return None
 
-        note_obj = Note(a4index=note, alt=alt)
-        return f0, note_obj, name
+        return Note(a4index=note, alt=alt)
 
     def close(self):
         self._stream.close()
