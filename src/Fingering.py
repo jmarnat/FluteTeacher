@@ -12,7 +12,7 @@ class Fingering(QWidget):
         super(Fingering, self).__init__()
         self.keys = []
         self.a4index_fingerings = {
-            -9: {'left': [2, 3, 4, 5], 'right': [1, 3, 5, 8]},  # C  4
+            -9: {'left': [2, 3, 4, 5], 'right': [1, 3, 5, 7]},  # C  4
             -8: {'left': [2, 3, 4, 5], 'right': [1, 3, 5, 6]},  # Db 4
             -7: {'left': [2, 3, 4, 5], 'right': [1, 3, 5]},  # D  4
             -6: {'left': [2, 3, 4, 5], 'right': [1, 3, 5, 6]},  # Eb 4
@@ -42,6 +42,9 @@ class Fingering(QWidget):
             return QColor(['white', self.hands_colors[hand]][n in self.keys[hand]])
 
         return QColor('gray')
+
+    def paintEvent(self, event):
+        self.draw_fingering()
 
     def draw_fingering(self):
         qp = QPainter()
@@ -142,5 +145,3 @@ class Fingering(QWidget):
 
         qp.end()
 
-    def paintEvent(self, event):
-        self.draw_fingering()

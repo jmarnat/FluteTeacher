@@ -1,10 +1,12 @@
 import threading
 from time import sleep
 from PyQt5.QtWidgets import *
+
 from .Staff import Staff
 from .Note import Note
 from .Fingering import Fingering
 from .HearAI import HearAI
+from .Scale import Scale
 
 VALIDATE_NOTE = True
 BLINKING_TIME = 1
@@ -12,11 +14,16 @@ BLINKING_LOOPS = 3
 
 
 class FluteTeacher:
+    NOTE_MODE_RANDOM = 1
+    NOTE_MODE_SCALE = 2
+
     def __init__(self, width=800, height=600):
         self._current_note = None
         self._heard_note = None
         self._is_hearing = False
         self._autonext = False
+        self._scale = Scale(arp=Scale.ARP_SCALE_1, pos=0)
+        self._note_mode = FluteTeacher.NOTE_MODE_SCALE
 
         # ================================================= #
         #                   USER INTERFACE                  #
@@ -52,7 +59,6 @@ class FluteTeacher:
 
         self._next_button = QPushButton('next')
         self._next_button.clicked.connect(self.next_note)
-        # self._next_button.onc
         self._bottom_row_layout.addWidget(self._next_button)
 
         self._button_autonext = QPushButton('Enable AutoNext' if not self._autonext else 'Disable AutoNext')
@@ -62,6 +68,10 @@ class FluteTeacher:
         self._button_listening = QPushButton('Start listening' if not self._is_hearing else 'Stop listening')
         self._button_listening.clicked.connect(self.toggle_listening)
         self._bottom_row_layout.addWidget(self._button_listening)
+
+        self._button_debug_update = QPushButton('[debug redraw]')
+        self._button_debug_update.clicked.connect(self.debug_update)
+        self._bottom_row_layout.addWidget(self._button_debug_update)
 
         # main grid
         self._grid = QGridLayout()
@@ -77,6 +87,9 @@ class FluteTeacher:
         # ================================================= #
         self._hear_ai = HearAI()
 
+    def debug_update(self):
+        self._window.update()
+
     def toggle_autonext(self):
         self._autonext = not self._autonext
 
@@ -90,7 +103,7 @@ class FluteTeacher:
             dec = self.hear_sample()
 
             if self._autonext and (dec == 0):
-                self.next_note()
+                self.next_note(validate=True)
 
             self._window.update()
 
@@ -105,19 +118,35 @@ class FluteTeacher:
             self._button_listening.setText('Start listening')
             self._right_staff.erase_note()
 
-    def next_note(self):
-        if (self._current_note is not None) and VALIDATE_NOTE:
-            (_note, _alt) = self._current_note.to_graph()
-            btime = (BLINKING_TIME / (2 * BLINKING_LOOPS))
-            for blink_loop in range(BLINKING_LOOPS):
-                self._left_staff.display_note(_note, _alt, ndec=0)
-                self._right_staff.display_note(_note, _alt, ndec=0)
-                sleep(btime)
-                self._left_staff.erase_note()
-                self._right_staff.erase_note()
-                sleep(btime)
+    def blink_notes(self):
+        (_note, _alt) = self._current_note.to_graph()
+        btime = (BLINKING_TIME / (2 * BLINKING_LOOPS))
+        for blink_loop in range(BLINKING_LOOPS):
+            self._left_staff.display_note(_note, _alt, ndec=0)
+            self._right_staff.display_note(_note, _alt, ndec=0)
+            sleep(btime)
+            self._left_staff.erase_note()
+            self._right_staff.erase_note()
+            sleep(btime)
 
-        self._current_note = Note.random(difficulty=1, last_note=self._current_note)
+    def next_note(self, validate=False):
+        if VALIDATE_NOTE and validate and (self._current_note is not None):
+            thr = threading.Thread(target=self.blink_notes())
+            print('blinking thread')
+            thr.start()
+            thr.join()
+            print('done.')
+
+        if self._note_mode == FluteTeacher.NOTE_MODE_RANDOM:
+            self._current_note = Note.random(difficulty=1, last_note=self._current_note)
+        elif self._note_mode == FluteTeacher.NOTE_MODE_SCALE:
+            self._current_note = self._scale.get_arp_note()
+            if self._scale.is_arp_done():
+                self._scale.reset_arp()
+        else:
+            exit(0)
+
+        print('next note is: {}'.format(self._current_note.to_str()))
         (_note, _alt) = self._current_note.to_graph()
         self._left_staff.display_note(_note, _alt)
         self.fingering.set_fingering(self._current_note.a4index())

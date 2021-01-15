@@ -17,15 +17,9 @@ class HearAI:
         self._channels = channels
         self._audio_format = pyaudio.paInt16
         self._audio_threshold = audio_threshold
-
-        self._pyaudio = pyaudio.PyAudio()
-        self._stream = self._pyaudio.open(format=self._audio_format,
-                                          channels=channels,
-                                          rate=rate,
-                                          input=True,
-                                          frames_per_buffer=chunk)
-        self._stream.stop_stream()
         self._last_frames = None
+
+        self._init_stream()
 
         self._notes = ['A', 'A#/Bb', 'B', 'C', 'C#/Db', 'D',
                        'D#/Eb', 'E', 'F', 'F#/Gb', 'G', 'G#/Ab']
@@ -36,8 +30,20 @@ class HearAI:
             bound_r = 440 * (2 ** ((i + 0.5) / 12))
             self._notes_freqs[i] = (bound_l, bound_r)
 
+    def _init_stream(self):
+        self._pyaudio = pyaudio.PyAudio()
+        self._stream = self._pyaudio.open(format=self._audio_format,
+                                          channels=self._channels,
+                                          rate=self._rate,
+                                          input=True,
+                                          frames_per_buffer=self._chunk)
+        self._stream.stop_stream()
+
     def record(self, millis=200):
         length_secs = millis / 1000
+        if self._stream.is_stopped():
+            self._init_stream()
+
         self._stream.start_stream()
         self._last_frames = []
         nb_chunks = int(length_secs * (self._rate / self._chunk))
