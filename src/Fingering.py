@@ -35,13 +35,13 @@ class Fingering(QWidget):
             self.keys = self.midi_fingerings[note.midi_code]
         except KeyError:
             print('warning, no fingering for note no {}'.format(note.midi_code))
-            self.keys = [{'left': [], 'right': []}]
+            self.keys = None
         self.update()
 
     def _get_color(self, n, hand):
-        if hand in ['left', 'right']:
-            return QColor(['white', self.hands_colors[hand]][n in self.keys[hand]])
-
+        if self.keys is not None:
+            if hand in ['left', 'right']:
+                return QColor(['white', self.hands_colors[hand]][n in self.keys[hand]])
         return QColor('gray')
 
     def paintEvent(self, event):

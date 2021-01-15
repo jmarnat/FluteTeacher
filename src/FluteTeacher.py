@@ -24,7 +24,7 @@ class FluteTeacher:
         self._is_hearing = False
         self._autonext = False
         self._scale_manager = ScaleManager()
-        self._note_mode = FluteTeacher.NOTE_MODE_RANDOM_2
+        self._note_mode = FluteTeacher.NOTE_MODE_SCALE
 
         # ================================================= #
         #                   USER INTERFACE                  #

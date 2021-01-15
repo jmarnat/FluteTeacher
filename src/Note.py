@@ -47,6 +47,9 @@ class Note:
     #     """returns the line-index + alteration"""
     #     return self.b_index, self.alt
 
+    def get_8va(self):
+        return Note(self.letter, self.octave+1, self.alt)
+
     @staticmethod
     def _get_midi_code(letter, octave, alt):
         _note_decay = Note.NOTE_DECAYS[letter]
@@ -67,6 +70,13 @@ class Note:
         note_alt = found_note_str[1] if (len(found_note_str) == 2) else ''
         note_octave = (midi_number // 12) - 1
         return Note(note_letter, note_octave, note_alt)
+
+    @staticmethod
+    def from_str(note_str):
+        _ltr = note_str[0]
+        _oct = int(note_str[-1])
+        _alt = note_str[1] if len(note_str) == 3 else ''
+        return Note(_ltr, _oct, _alt)
 
     @staticmethod
     def random_bis(difficulty=1):

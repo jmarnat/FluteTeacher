@@ -3,37 +3,47 @@ from .Note import Note
 from .Arpeggio import Arpeggio
 
 
-class Scales:
-    def __init__(self):
-        self.scales_str = {
-            'C Major': 'C4,D4,E4,F4,G4,A4,B4',
-            'D Major': 'D4,E4,F#4,G4,A4,B4,C#5',
-            'E Major': 'E4,F#4,G#4,A4,B4,C#5,D#5',
-            'F Major': 'F4,G4,A4,Bb4,C5,D5,E5'
-        }
+# class Scales:
+#     def __init__(self):
+#         self.scales_str = {
+#             'C Major': 'C4,D4,E4,F4,G4,A4,B4',
+#             'C# Major': 'C#4,D#4,E#4,F#4,G#4,A#4,B#4,C#5',
+#             'D Major': 'D4,E4,F#4,G4,A4,B4,C#5',
+#             'E Major': 'E4,F#4,G#4,A4,B4,C#5,D#5',
+#             'F Major': 'F4,G4,A4,Bb4,C5,D5,E5'
+#         }
 
 
 class ScaleManager:
-    def __init__(self, str_name='C Major', mode=0, arp=Arpeggio.UP):
+    def __init__(self, str_name='F Major', mode=0, arp=Arpeggio.UP):
         self._scale = None
         self._mode = mode
         self._arp = arp
         self._len = 0
         self._is_arp_done = False
         self._arp_pos = 0
+        self._scales_dict = {
+            'C Major': 'C4,D4,E4,F4,G4,A4,B4',
+            'C# Major': 'C#4,D#4,E#4,F#4,G#4,A#4,B#4,C#5',
+            'D Major': 'D4,E4,F#4,G4,A4,B4,C#5',
+            'E Major': 'E4,F#4,G#4,A4,B4,C#5,D#5',
+            'F Major': 'F4,G4,A4,Bb4,C5,D5,E5'
+        }
         self.set_scale(str_name)
 
-    def set_scale(self, str_name='C Major'):
-        self._scale = [
-            Note('C', 4),
-            Note('D', 4),
-            Note('E', 4),
-            Note('F', 4),
-            Note('G', 4),
-            Note('A', 4),
-            Note('B', 4),
-            Note('C', 5),
-        ]
+    def set_scale(self, scale_name):
+        if scale_name in self._scales_dict.keys():
+            _scale_name = scale_name
+        else:
+            print('WARNING: no scale named "{}"'.format(scale_name))
+            _scale_name = list(self._scales_dict.keys())[0]
+
+        self._scale = []
+        for note_str in self._scales_dict[scale_name].split(','):
+            note_obj = Note.from_str(note_str)
+            self._scale.append(note_obj)
+
+        self._scale.append(self._scale[0].get_8va())
         self._len = len(self._scale)
         self.reset_arp()
 
