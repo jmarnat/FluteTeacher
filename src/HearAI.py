@@ -78,16 +78,13 @@ class HearAI:
 
         return f0
 
-    def _note_fullname(self, note):
-        return "{} {}".format(self._notes[note % 12], ((note // 12) + 4))
-
-    def _get_note(self, f0):
+    def _get_a4index(self, f0):
         for note, (left, right) in self._notes_freqs.items():
             if left <= f0 < right:
                 return note
         return None
 
-    def get_last_note(self, alt='#'):
+    def get_last_note(self, alt):
         """
             (f0, note, name) with:
             f0:   FFT main frequency
@@ -99,15 +96,13 @@ class HearAI:
         if f0 is None:
             return None
 
-        note = self._get_note(f0)
-        if note is None:
+        note_a4_index = self._get_a4index(f0)
+        if note_a4_index is None:
             return None
 
-        name = self._note_fullname(note)
-        if name is None:
-            return None
-
-        return Note(a4index=note, alt=alt)
+        found_note = Note.from_a440(note_a4_index, alt)
+        print('Hearing:', found_note.to_str())
+        return found_note
 
     def close(self):
         self._stream.close()

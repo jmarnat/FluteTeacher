@@ -6,24 +6,25 @@ from .Staff import Staff
 from .Note import Note
 from .Fingering import Fingering
 from .HearAI import HearAI
-from .Scale import Scale
+from .ScaleManager import ScaleManager
 
 VALIDATE_NOTE = True
-BLINKING_TIME = 1
+BLINKING_TIME = 0.6
 BLINKING_LOOPS = 3
 
 
 class FluteTeacher:
-    NOTE_MODE_RANDOM = 1
-    NOTE_MODE_SCALE = 2
+    NOTE_MODE_RANDOM_1 = 1
+    NOTE_MODE_RANDOM_2 = 2
+    NOTE_MODE_SCALE = 0
 
     def __init__(self, width=800, height=600):
         self._current_note = None
         self._heard_note = None
         self._is_hearing = False
         self._autonext = False
-        self._scale = Scale(arp=Scale.ARP_SCALE_1, pos=0)
-        self._note_mode = FluteTeacher.NOTE_MODE_SCALE
+        self._scale_manager = ScaleManager()
+        self._note_mode = FluteTeacher.NOTE_MODE_RANDOM_2
 
         # ================================================= #
         #                   USER INTERFACE                  #
@@ -102,10 +103,11 @@ class FluteTeacher:
         while self._is_hearing:
             dec = self.hear_sample()
 
-            if self._autonext and (dec == 0):
+            if self._autonext and (dec is not None) and (dec == 0):
                 self.next_note(validate=True)
 
-            self._window.update()
+            # self._window.update()
+            # print('window update ok')
 
     def toggle_listening(self):
         self._is_hearing = not self._is_hearing
@@ -119,15 +121,15 @@ class FluteTeacher:
             self._right_staff.erase_note()
 
     def blink_notes(self):
-        (_note, _alt) = self._current_note.to_graph()
         btime = (BLINKING_TIME / (2 * BLINKING_LOOPS))
         for blink_loop in range(BLINKING_LOOPS):
-            self._left_staff.display_note(_note, _alt, ndec=0)
-            self._right_staff.display_note(_note, _alt, ndec=0)
+            self._left_staff.display_note(self._current_note, ndec=0)
+            self._right_staff.display_note(self._current_note, ndec=0)
             sleep(btime)
             self._left_staff.erase_note()
             self._right_staff.erase_note()
             sleep(btime)
+        return
 
     def next_note(self, validate=False):
         if VALIDATE_NOTE and validate and (self._current_note is not None):
@@ -137,30 +139,40 @@ class FluteTeacher:
             thr.join()
             print('done.')
 
-        if self._note_mode == FluteTeacher.NOTE_MODE_RANDOM:
-            self._current_note = Note.random(difficulty=1, last_note=self._current_note)
+        if self._note_mode == FluteTeacher.NOTE_MODE_RANDOM_1:
+            self._current_note = Note.random_note(difficulty=1, last_note=self._current_note)
+        elif self._note_mode == FluteTeacher.NOTE_MODE_RANDOM_2:
+            self._current_note = Note.random_note(difficulty=2, last_note=self._current_note)
         elif self._note_mode == FluteTeacher.NOTE_MODE_SCALE:
-            self._current_note = self._scale.get_arp_note()
-            if self._scale.is_arp_done():
-                self._scale.reset_arp()
+            self._current_note = self._scale_manager.get_arp_note()
+            if self._scale_manager.is_arp_done():
+                self._scale_manager.reset_arp()
         else:
             exit(0)
 
-        print('next note is: {}'.format(self._current_note.to_str()))
-        (_note, _alt) = self._current_note.to_graph()
-        self._left_staff.display_note(_note, _alt)
-        self.fingering.set_fingering(self._current_note.a4index())
+        if self._current_note is None:
+            print('ERROR: NEW NOTE IS NONE')
+            exit(0)
+        else:
+            print('note:', self._current_note)
+            print('note_str:', self._current_note.to_str())
+
+        # print('next note is: {}'.format(self._current_note.to_str()))
+        self._left_staff.display_note(self._current_note)
+        self.fingering.set_fingering(self._current_note)
 
     def hear_sample(self):
         self._hear_ai.record(millis=200)
-        heard_note = self._hear_ai.get_last_note()
+        heard_note = self._hear_ai.get_last_note(alt=self._current_note.alt)
 
         if heard_note is not None:
             self._heard_note = heard_note
-            (b_index, alt) = heard_note.to_graph()
-            dec = heard_note.a4index() - self._current_note.a4index()
-            self._right_staff.display_note(b_index=b_index, alt=alt, ndec=dec)
+            dec = heard_note.midi_code - self._current_note.midi_code
+            self._right_staff.display_note(heard_note, ndec=dec)
             return dec
 
         self._right_staff.erase_note()
         return None
+
+    def set_scale(self, str_name):
+        self._scale_manager = ScaleManager(str_name)

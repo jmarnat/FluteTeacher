@@ -29,8 +29,8 @@ class Staff(QWidget):
         """inter-line height"""
         return self.height() / 12
 
-    def display_note(self, b_index, alt, ndec=None, update=True):
-        self.notes = [(b_index, alt)]
+    def display_note(self, note, ndec=None, update=True):
+        self.notes = [note]
         self.ndec = ndec
         if update:
             self.update()
@@ -68,8 +68,11 @@ class Staff(QWidget):
 
     def _paint_notes(self, qp):
         xdec = -50
-        for (note, alt) in self.notes:
-            self._paint_note(qp, note_index=note, xdec=xdec, alt=alt)
+        for note in self.notes:
+            if note is not None:
+                self._paint_note(qp, note=note, xdec=xdec)
+            else:
+                print('Error, note is none')
             xdec += 50
 
     def _note_color(self):
@@ -83,17 +86,13 @@ class Staff(QWidget):
 
         return QColor(COLOR_NORMAL)
 
-    def _paint_note(self, qp, note_index, xdec, alt=''):
+    def _paint_note(self, qp, note, xdec):
+        note_index = note.b_index
         # note pos and color
         lh = self.il()
         note_center_xpos = int(xdec + (self.width() / 2) - (1.25 * lh / 2))
         note_center_ypos = int(self.mid_height() - (note_index * lh/2) - (lh/2))
         note_color = self._note_color()
-
-        # note ellipse
-        qp.setPen(note_color)
-        qp.setBrush(note_color)
-        qp.drawEllipse(note_center_xpos, note_center_ypos, int(1.25 * lh), int(lh))
 
         # note support bar(s) if needed
         if note_index <= -6:
@@ -113,6 +112,11 @@ class Staff(QWidget):
                 xpos_r = int(note_center_xpos + (1.25 * lh) + (0.5 * lh)) + 1
                 qp.drawLine(xpos_l, note_ypos, xpos_r, note_ypos)
 
+        # note ellipse
+        qp.setPen(note_color)
+        qp.setBrush(note_color)
+        qp.drawEllipse(note_center_xpos, note_center_ypos, int(1.25 * lh), int(lh))
+
         # note's vertical bar
         if note_index > 0:
             qp.setPen(note_color)
@@ -129,13 +133,13 @@ class Staff(QWidget):
 
         # sharp if needed
         qp.setPen(QColor(COLOR_NORMAL))
-        if alt == '#':
+        if note.alt == '#':
             sharp_h = int(3 * lh)
             sharp_w = int(sharp_h * (self.qimages['sharp'].width() / self.qimages['sharp'].height()))
             sharp_xpos = int(note_center_xpos - sharp_h / 2)
             sharp_ypos = int(self.mid_height() - (note_index * lh/2) - (sharp_h / 2))
             qp.drawImage(QRect(sharp_xpos, sharp_ypos, sharp_w, sharp_h), self.qimages['sharp'])
-        elif alt == 'b':
+        elif note.alt == 'b':
             flat_h = int(2.5 * lh)
             flat_w = int(flat_h * (self.qimages['flat'].width() / self.qimages['flat'].height()))
             flat_xpos = int(note_center_xpos - flat_w - 5)

@@ -11,30 +11,31 @@ class Fingering(QWidget):
     def __init__(self):
         super(Fingering, self).__init__()
         self.keys = []
-        self.a4index_fingerings = {
-            -9: {'left': [2, 3, 4, 5], 'right': [1, 3, 5, 7]},  # C  4
-            -8: {'left': [2, 3, 4, 5], 'right': [1, 3, 5, 6]},  # Db 4
-            -7: {'left': [2, 3, 4, 5], 'right': [1, 3, 5]},  # D  4
-            -6: {'left': [2, 3, 4, 5], 'right': [1, 3, 5, 6]},  # Eb 4
-            -5: {'left': [2, 3, 4, 5], 'right': [1, 3, 6]},  # E  4
-            -4: {'left': [2, 3, 4, 5], 'right': [1, 6]},  # F  4
-            -3: {'left': [2, 3, 4, 5], 'right': [5, 6]},  # Gb  4
-            -2: {'left': [2, 3, 4, 5], 'right': [6]},  # G  4
-            -1: {'left': [2, 3, 4, 5, 6], 'right': [6]},  # Ab 4
-            0: {'left': [2, 3, 4], 'right': [6]},  # A  4
-            1: {'left': [2, 3], 'right': [1, 6]},  # Bb 4
-            2: {'left': [2, 3], 'right': [6]},  # B  4
-            3: {'left': [3], 'right': [6]},  # C  5
-            4: {'left': [], 'right': [6]},  # Db 5
+        self.midi_fingerings = {
+            60: {'left': [2, 3, 4, 5], 'right': [1, 3, 5, 7]},  # C  4
+            61: {'left': [2, 3, 4, 5], 'right': [1, 3, 5, 6]},  # Db 4
+            62: {'left': [2, 3, 4, 5], 'right': [1, 3, 5]},  # D  4
+            63: {'left': [2, 3, 4, 5], 'right': [1, 3, 5, 6]},  # Eb 4
+            64: {'left': [2, 3, 4, 5], 'right': [1, 3, 6]},  # E  4
+            65: {'left': [2, 3, 4, 5], 'right': [1, 6]},  # F  4
+            66: {'left': [2, 3, 4, 5], 'right': [5, 6]},  # Gb  4
+            67: {'left': [2, 3, 4, 5], 'right': [6]},  # G  4
+            68: {'left': [2, 3, 4, 5, 6], 'right': [6]},  # Ab 4
+            69: {'left': [2, 3, 4], 'right': [6]},  # A  4
+            70: {'left': [2, 3], 'right': [1, 6]},  # Bb 4
+            71: {'left': [2, 3], 'right': [6]},  # B  4
+            72: {'left': [3], 'right': [6]},  # C  5
+            73: {'left': [], 'right': [6]},  # Db 5
         }
 
         self.hands_colors = HANDS_COLORS_3
 
-    def set_fingering(self, a4index):
+    def set_fingering(self, note):
         try:
-            self.keys = self.a4index_fingerings[a4index]
-        except IndexError:
-            self.keys = []
+            self.keys = self.midi_fingerings[note.midi_code]
+        except KeyError:
+            print('warning, no fingering for note no {}'.format(note.midi_code))
+            self.keys = [{'left': [], 'right': []}]
         self.update()
 
     def _get_color(self, n, hand):
@@ -144,4 +145,3 @@ class Fingering(QWidget):
         )
 
         qp.end()
-
