@@ -1,5 +1,6 @@
 # FluteTeacher
-I've made myself a Artificial Flute Teacher!
+Since I'm cheap and nerdy, I've made myself an Artificial Flute Teacher!
+
 Here is a screenshot of the actual version:
 ![Screen1](doc_res/screen2.png)
 
@@ -12,6 +13,7 @@ Here is a screenshot of the actual version:
 - [ ] add minor scales
 - [ ] add harmonic-minor scales
 - [ ] add melodic-minor scales
+- [ ] add "About" window for copyright + website
 
 ### For compilation:
 - [ ] check requirements
