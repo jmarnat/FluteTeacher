@@ -53,7 +53,7 @@ Here is a screenshot of the actual version:
 - [x] change "normal mode" to "random notes"
 - [x] add "scale and modes practice" :
 
-#### v0.3 (to tag!):
+#### v0.3:
 - [x] True scale generator (with intervals)
 - [x] Adding minor scales
 - [x] Mode computing
