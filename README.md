@@ -6,14 +6,16 @@ Here is a screenshot of the actual version:
 
 ## Features:
 ### Sure:
-- [ ] add training mode in GUI
-- [ ] add scale selection in GUI
-- [ ] add french translation
+- [x] SUPER P0: True scale generator (with intervals)
+- [x] add minor scales
+- [ ] add empty menu bar
+  - [ ] training mode selection
+  - [ ] scale selection (+mode ?)
+  - [ ] "About" window for copyright + website 
+- [ ] add French translation
 - [ ] finish notes
-- [ ] add minor scales
 - [ ] add harmonic-minor scales
-- [ ] add melodic-minor scales
-- [ ] add "About" window for copyright + website
+- [ ] add melodic-minor scales 
 
 ### For compilation:
 - [ ] check requirements
@@ -26,6 +28,7 @@ Here is a screenshot of the actual version:
 - [ ] add tuning setting
 - [ ] add visual tuner
 - [ ] better drawings?
+- [ ] for multiple notes: better auto placement (100px + proportion?)
 
 ### Done:
 - [x] main window with 3 rows

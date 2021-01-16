@@ -1,55 +1,138 @@
 from sys import argv
-from .Note import Note
-from .Arpeggiator import Arpeggiator
+from src.Note import Note
+from src.Arpeggiator import Arpeggiator, ArpeggiatorV2
+
+
+class Alteration:
+    __alt_corresp__ = {'bb': -2, 'b': -1, '': 0, ' ': 0, '#': +1, '##': +2}
+
+    def __init__(self, semitones=None, alt_str=None):
+        if semitones is not None:
+            self._alt = semitones
+        elif alt_str is not None:
+            self._alt = Alteration.__alt_corresp__[alt_str]
+        else:
+            print('ERROR: no semitone or alt_str!')
+
+    def value(self):
+        return self._alt
+
+    def to_str(self):
+        return str(self)
+
+    def __str__(self):
+        return {-2: 'bb', -1: 'b', 0: '', 1: '#', 2: '##'}[self._alt]
+
+
+class Alterations:
+    SHARP = Alteration(semitones=1)
+    DOUBLE_SHARP = Alteration(semitones=2)
+    NATURAL = Alteration(semitones=0)
+    FLAT = Alteration(semitones=-1)
+    DOUBLE_FLAT = Alteration(semitones=-2)
+
+
+class Intervals:
+    UNISON_AUGMENTED = (1, Alterations.SHARP)
+    SECOND_MINOR = (2, Alterations.FLAT)
+    SECOND_MAJOR = (2, Alterations.NATURAL)
+    SECOND_AUGMENTED = (2, Alterations.SHARP)
+
+
+class Scales:
+    MAJOR = [
+        Intervals.SECOND_MAJOR,
+        Intervals.SECOND_MAJOR,
+        Intervals.SECOND_MINOR,
+        Intervals.SECOND_MAJOR,
+        Intervals.SECOND_MAJOR,
+        Intervals.SECOND_MAJOR,
+        Intervals.SECOND_MINOR
+    ]
+
+    MINOR = [
+        Intervals.SECOND_MAJOR,
+        Intervals.SECOND_MINOR,
+        Intervals.SECOND_MAJOR,
+        Intervals.SECOND_MAJOR,
+        Intervals.SECOND_MINOR,
+        Intervals.SECOND_MAJOR,
+        Intervals.SECOND_MAJOR
+    ]
 
 
 class ScaleManager:
-    def __init__(self, str_name='F Major', mode=0, arp=Arpeggiator.UP_DOWN):
+    MODES = {
+        'Major': (1, 2, 3, 4, 5, 6, 7),
+        'Whole-tone': [1]
+    }
+
+    def __init__(self, scale_name='Major', base_note=Note(), mode=1, arp=ArpeggiatorV2.UP):
+        """
+        :param scale_name: implemented: 'Major', 'Whole-tone'
+        :param first_note:
+        :param mode: from 1 to 7
+        :param arp:
+        """
+        if scale_name not in ScaleManager.MODES.keys():
+            print('ERROR: scale name "{}" unknown'.format(scale_name))
+            return
+        if mode not in ScaleManager.MODES[scale_name]:
+            print('ERROR: mode no {} non-available for scale "{}"'.format(mode, scale_name))
+            return
+
         self._scale = None
         self._mode = mode
-        # self._len = 0
+        self._arp_type = arp
         self._arpeggiator = None
-        self._scales_dict = {
-            'Chromatic-sharp': 'C4,C#4,D4,D#4,E4,F4,F#4,G4,G#4,A4,A#4,B4',
-            'Chromatic-flat': 'C4,Db4,D4,Eb4,E4,F4,Gb4,G4,Ab4,A4,Bb4,B4',
-            'C Major': 'C4,D4,E4,F4,G4,A4,B4',
-            'C# Major': 'C#4,D#4,E#4,F#4,G#4,A#4,B#4,C#5',
-            'D Major': 'D4,E4,F#4,G4,A4,B4,C#5',
-            'E Major': 'E4,F#4,G#4,A4,B4,C#5,D#5',
-            'F Major': 'F4,G4,A4,Bb4,C5,D5,E5'
-        }
-        self.set_scale(str_name)
-        self.init_arp(arp)
+        self.set_scale(scale_name, base_note, mode)
+        self.init_arp()
 
-    def set_scale(self, scale_name):
-        if scale_name in self._scales_dict.keys():
-            _scale_name = scale_name
+    @staticmethod
+    def _get_scales_json():
+        return
+
+    def set_scale(self, scale_name, base_note, mode):
+        """
+        :param scale_name: Major/Minor
+        :param base_note: note object for the base scale
+        :param mode: mode (ideally from 0 fo len(scale)-1)
+        :return: nothing
+        """
+
+        if scale_name == 'Major':
+            self._scale = ScaleManager._compute_scale(base_note, Scales.MAJOR, mode)
+        elif scale_name == 'Minor':
+            self._scale = ScaleManager._compute_scale(base_note, Scales.MINOR, mode)
+        # elif scale_name == 'Whole-tone':
+        #     self._scale = ScaleManager._compute_scale(base_note, mode)
         else:
-            print('WARNING: no scale named "{}"'.format(scale_name))
-            _scale_name = list(self._scales_dict.keys())[0]
+            print('WARNING: unknown scale name "{}"'.format(scale_name))
+            self._scale = ScaleManager._compute_scale(base_note, Scales.MAJOR, mode)
+        self.init_arp()
 
-        self._scale = []
-        for note_str in self._scales_dict[scale_name].split(','):
-            note_obj = Note.from_str(note_str)
-            self._scale.append(note_obj)
+    @staticmethod
+    def _compute_scale(base_note, scale_intervals, mode=1):
+        # TODO: MODES
+        current_note = base_note
+        _sc = [current_note]
 
-        self._scale.append(self._scale[0].get_8va())
+        for next_scale_note, interval in zip(scale_intervals[1:], scale_intervals[:-1]):
+            next_note = current_note.add_interval(interval)
+            _sc.append(next_note)
+            current_note = next_note
 
-    def init_arp(self, arp):
-        self._arpeggiator = Arpeggiator(self._scale, arp)
+        return _sc
+
+    def set_arp(self, arp_type):
+        self._arp_type = arp_type
+        self.init_arp()
+
+    def init_arp(self):
+        self._arpeggiator = ArpeggiatorV2(self._scale, self._arp_type)
 
     def next_arp_note(self):
-        print('next_arp_note, self._arpeggiator=', self._arpeggiator)
-        return self._arpeggiator.get_note()
+        return self._arpeggiator.pick_note()
 
     def is_arp_done(self):
         return self._arpeggiator.is_done()
-
-
-if __name__ == '__main__':
-    if (len(argv) > 1) and (argv[1] == 'test'):
-        scale = ScaleManager(arp=Arpeggiator.UP)
-        print('C major:')
-        while not scale.is_arp_done():
-            next_note = scale.next_arp_note()
-            print(next_note.to_str())

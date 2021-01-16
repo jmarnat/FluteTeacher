@@ -1,4 +1,5 @@
 import random
+from src.Alteration import Alteration, Alterations
 
 
 class Note:
@@ -13,48 +14,70 @@ class Note:
         '#': ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'],
         'b': ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
     }
-
     NOTE_DECAYS = {'C': 0, 'D': 2, 'E': 4, 'F': 5, 'G': 7, 'A': 9, 'B': 11}
+    PURE_INTERVALS = {1: 0, 2: 2, 3: 4, 4: 5, 5: 7, 6: 9, 7: 11, 8: 12}
 
-    def __init__(self, letter, octave, alt=''):
+    def __init__(self, letter='C', octave=4, alteration=Alterations.NATURAL):
+        """
+        :param letter: should be A -> G
+        :param octave: ideally 4 -> 6~7
+        :param alt: '', '#' or 'b'
+        """
         self.letter = letter
         self.octave = octave
-        self.alt = alt
+        self.alteration = alteration
 
-        self.midi_code = Note._get_midi_code(letter, octave, alt)
+        self.midi_code = Note._get_midi_code(letter, octave, alteration)
 
-        # computing graph values
-        notes_order = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
-        if self.alt == '#':
-            self.b_index = (notes_order.index(self.letter)) + (7 * (self.octave - 5)) + 1
-        elif self.alt == 'b':
-            self.b_index = (notes_order.index(self.letter)) + (7 * (self.octave - 5)) + 1
-        else:
-            self.b_index = (notes_order.index(self.letter)) + (7 * (self.octave - 5)) + 1
-
-    # def same_code(self, other_note):
-    #     return self.midi_code == other_note.midi_code
-    #
-    # def same_graph(self, other_note):
-    #     return self.letter == other_note.letter \
-    #         and self.octave == other_note.octave \
-    #         and self.alt == other_note.alt
+        # computing graph values (B-index = index from B = center line)
+        self.b_index = ('CDEFGAB'.index(self.letter)) + (7 * (self.octave - 5)) + 1
 
     def to_str(self):
-        return "{}{} {}".format(self.letter, self.alt, self.octave)
+        str(self)
 
-    # def to_graph(self):
-    #     """returns the line-index + alteration"""
-    #     return self.b_index, self.alt
+    def __str__(self):
+        return self.letter + str(self.alteration) + str(self.octave)
 
     def get_8va(self):
-        return Note(self.letter, self.octave+1, self.alt)
+        return Note(self.letter, self.octave + 1, self.alteration)
+
+    def add_interval(self, interval):
+        """
+        :param interval: from class Interval
+        """
+        notes_str = list(Note.NOTE_DECAYS.keys())
+        int_val, int_alt = interval
+
+        next_note_letter = notes_str[(notes_str.index(self.letter) + int_val - 1) % 7]
+        next_note_octave = self.octave
+        next_note_alt = Alterations.NATURAL
+
+        next_note_tmp = Note(next_note_letter, next_note_octave, next_note_alt)
+        dec_tmp = next_note_tmp.midi_code - self.midi_code
+
+        if dec_tmp < 0:
+            next_note_octave += 1
+            next_note_tmp = Note(next_note_letter, next_note_octave, next_note_alt)
+
+        dec_tmp = next_note_tmp.midi_code - self.midi_code
+        _int_alt_value = int_alt.value()
+        dec_real = Note.PURE_INTERVALS[int_val] + _int_alt_value
+        alt_corr = (dec_real - dec_tmp)
+        next_note_alt = Alteration(semitones=alt_corr)
+
+        final_note = Note(next_note_letter, next_note_octave, next_note_alt)
+        return final_note
 
     @staticmethod
-    def _get_midi_code(letter, octave, alt):
+    def _get_midi_code(letter, octave, alteration):
+        """
+        :param letter: note letter (A -> G)
+        :param octave: ideally from 4 -> 7 for the flute
+        :param alteration: from class Alteration
+        """
         _note_decay = Note.NOTE_DECAYS[letter]
-        _octave_devay = 12 * (octave+1)
-        _alt_decay = {'': 0, '#': +1, 'b': -1}[alt]
+        _octave_devay = 12 * (octave + 1)
+        _alt_decay = alteration.value()
         return _note_decay + _octave_devay + _alt_decay
 
     @staticmethod

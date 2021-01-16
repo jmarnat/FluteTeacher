@@ -2,11 +2,13 @@ import threading
 from time import sleep
 from PyQt5.QtWidgets import *
 
-from .Staff import Staff
-from .Note import Note
-from .Fingering import Fingering
-from .HearAI import HearAI
-from .ScaleManager import ScaleManager
+from src.Staff import Staff
+from src.Note import Note
+from src.Fingering import Fingering
+from src.HearAI import HearAI
+from src.ScaleManager import ScaleManager
+from src.Arpeggiator import ArpeggiatorV2
+from src.Alteration import Alterations
 
 VALIDATE_NOTE = True
 BLINKING_TIME = 0.6
@@ -23,7 +25,10 @@ class FluteTeacher:
         self._heard_note = None
         self._is_hearing = False
         self._autonext = False
-        self._scale_manager = ScaleManager()
+        self._scale_manager = ScaleManager(scale_name='Major',
+                                           mode=1,
+                                           base_note=Note('C', 4, Alterations.NATURAL),
+                                           arp=ArpeggiatorV2.THIRDS_UP)
         self._note_mode = FluteTeacher.NOTE_MODE_SCALE
 
         # ================================================= #

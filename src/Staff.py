@@ -67,7 +67,7 @@ class Staff(QWidget):
         qp.drawImage(QRect(clef_xpos, clef_ypos, clef_w, clef_h), self.qimages['g-clef'])
 
     def _paint_notes(self, qp):
-        xdec = -50
+        xdec = 0
         for note in self.notes:
             if note is not None:
                 self._paint_note(qp, note=note, xdec=xdec)
@@ -133,13 +133,13 @@ class Staff(QWidget):
 
         # sharp if needed
         qp.setPen(QColor(COLOR_NORMAL))
-        if note.alt == '#':
+        if str(note.alteration) == '#':
             sharp_h = int(3 * lh)
             sharp_w = int(sharp_h * (self.qimages['sharp'].width() / self.qimages['sharp'].height()))
             sharp_xpos = int(note_center_xpos - sharp_h / 2)
             sharp_ypos = int(self.mid_height() - (note_index * lh/2) - (sharp_h / 2))
             qp.drawImage(QRect(sharp_xpos, sharp_ypos, sharp_w, sharp_h), self.qimages['sharp'])
-        elif note.alt == 'b':
+        elif str(note.alteration) == 'b':
             flat_h = int(2.5 * lh)
             flat_w = int(flat_h * (self.qimages['flat'].width() / self.qimages['flat'].height()))
             flat_xpos = int(note_center_xpos - flat_w - 5)
