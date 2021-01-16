@@ -38,9 +38,20 @@ class MenuBar(QMenuBar):
                                                        ))
                     local_menu_alt.addAction(_qaction)
 
+        self._menu_octave = self._menu_training.addMenu('Start from octave..')
+        for octave, octave_name in [(4, '4 (Middle C)'), (5, '5'), (6, '6')]:
+            _qaction = QAction(octave_name, self._menu_octave)
+            _qaction.triggered.connect(partial(self.set_training_octave, octave))
+            self._menu_octave.addAction(_qaction)
+
     def set_training_scale(self, scale_name, base_note_letter, base_note_alt_str):
         base_note_str = "{}{}{}".format(base_note_letter, base_note_alt_str, 4)
         self._ft.set_scale(scale_name, Note.from_str(base_note_str), mode=1)
+
+    # noinspection PyMethodMayBeStatic
+    def set_training_octave(self, octave):
+        print('set training octave to {}'.format(octave))
+        pass
 
 
 class MainWindow(QMainWindow):

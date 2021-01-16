@@ -27,7 +27,7 @@ class FluteTeacher:
         self._scale_manager = ScaleManager(scale_name='Major',
                                            mode=1,
                                            base_note=Note('C', 4, Alterations.NATURAL),
-                                           arp=Arpeggiator.THIRDS_UP)
+                                           arp=Arpeggiator.UP_DOWN)
 
         self._note_mode = FluteTeacher.NOTE_MODE_SCALE
 

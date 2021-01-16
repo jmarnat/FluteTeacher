@@ -122,15 +122,22 @@ class ScaleManager:
 
     @staticmethod
     def _compute_wholetone_scale(base_note):
-        _sc = [
-            Note.from_str('C4'),
-            Note.from_str('D4'),
-            Note.from_str('E4'),
-            Note.from_str('F#4'),
-            Note.from_str('G#4'),
-            Note.from_str('A#4'),
-        ]
-        return _sc
+        _scale1 = ['C', 'D', 'E', 'F#', 'G#', 'A#']
+        _scale2 = ['C', 'D', 'E', 'Gb', 'Ab', 'Bb']
+        _scale3 = ['C#', 'D#', 'F', 'G', 'A', 'B']
+        _scale4 = ['Db', 'Eb', 'F', 'G', 'A', 'B']
+
+        _oct = base_note.octave
+        for _scale_str_list in [_scale1, _scale2, _scale3, _scale4]:
+            _note_str = "{}{}".format(base_note.letter, base_note.alteration)
+            if _note_str in _scale_str_list:
+                _note_idx = _scale_str_list.index(_note_str)
+                _scale_part1 = [Note.from_str("{}{}".format(n, _oct)) for n in _scale_str_list[_note_idx:]]
+                _scale_part2 = [Note.from_str("{}{}".format(n, _oct)).get_8va() for n in _scale_str_list[:_note_idx]]
+                print('full wholetone mode computed ok')
+                return _scale_part1 + _scale_part2
+
+        return None
 
     def set_arp(self, arp_type):
         self._arp_type = arp_type

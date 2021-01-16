@@ -35,6 +35,9 @@ class Arpeggiator:
         for note in self._scale:
             self._notes.append(note)
         self._notes.append(self._scale[0].get_8va())
+
+        # (i'm not sure if counting the last one or not..)
+        # for note in self._scale[1:][::-1]:
         for note in reversed(self._scale):
             self._notes.append(note)
         return
