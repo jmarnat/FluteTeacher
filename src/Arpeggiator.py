@@ -1,6 +1,6 @@
 
 
-class ArpeggiatorV2:
+class Arpeggiator:
     UP = 1
     UP_DOWN = 2
     THIRDS_UP = 3
@@ -13,11 +13,11 @@ class ArpeggiatorV2:
         self._mode = mode
         self._pos = 0
         self._isdone = False
-        if mode == ArpeggiatorV2.UP:
+        if mode == Arpeggiator.UP:
             self._init_mode_up()
-        elif mode == ArpeggiatorV2.UP_DOWN:
+        elif mode == Arpeggiator.UP_DOWN:
             self._init_mode_updown()
-        elif mode == ArpeggiatorV2.THIRDS_UP:
+        elif mode == Arpeggiator.THIRDS_UP:
             self._init_mode_thirds()
         else:
             print('WARNING: ArpeggiatorV2: no mode {}'.format(mode))
@@ -63,56 +63,6 @@ class ArpeggiatorV2:
             self._isdone = False
             self._pos += 1
         return current_note
-
-    def is_done(self):
-        return self._isdone
-
-
-class Arpeggiator:
-    UP = 1
-    UP_DOWN = 2
-
-    def __init__(self, scale, kind=UP):
-        """
-        :param scale: list of Notes
-        :param kind:
-        """
-        self._kind = kind
-        self._scale = scale
-        self._step = 0
-        self._idx = 0
-        self._isdone = False
-
-    def get_note(self):
-        idx = self._idx
-
-        if self._kind == Arpeggiator.UP:
-            if (self._step + 1) >= len(self._scale):
-                self._step = 0
-                self._isdone = True
-            else:
-                self._step += 1
-                self._isdone = False
-            self._idx = self._step
-            return self._scale[idx]
-
-        elif self._kind == Arpeggiator.UP_DOWN:
-            if (self._step + 1) >= (2 * len(self._scale) - 2):
-                self._step = 0
-                self._idx = 0
-                self._isdone = True
-            elif (self._step + 1) < len(self._scale):
-                self._step += 1
-                self._idx += 1
-                self._isdone = False
-            else:
-                self._step += 1
-                self._idx -= 1
-                self._isdone = False
-            return self._scale[idx]
-
-        else:
-            print('ERROR: no such Arpeggio')
 
     def is_done(self):
         return self._isdone

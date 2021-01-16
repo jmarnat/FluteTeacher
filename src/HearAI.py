@@ -1,9 +1,9 @@
 import pyaudio
 import sys
 import numpy as np
-
 from scipy.fft import fft
-from .Note import Note
+
+from src.Note import Note
 
 
 class HearAI:

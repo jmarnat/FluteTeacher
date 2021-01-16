@@ -11,9 +11,11 @@ Here is a screenshot of the actual version:
 - [x] add mode computing
 - [x] add empty menu bar
 - [ ] training mode selection:
-  - [x] Scales
+  - [x] Scales : Major / Minor
+  - [ ] Scales : whole-tone
   - [ ] Modes
   - [ ] Random + difficulty
+- [ ] Arp THIRDS_UP_DOWN
 - [ ] "About" window for copyright + website
 - [ ] add "start at octave" menu 
 - [ ] add French translation

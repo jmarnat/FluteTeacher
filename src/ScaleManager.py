@@ -1,8 +1,6 @@
-from sys import argv
-from src.Note import Note
-from src.Arpeggiator import Arpeggiator, ArpeggiatorV2
 from src.Intervals import Intervals
-# from src.Alteration import *
+from src.Note import Note
+from src.Arpeggiator import Arpeggiator
 
 
 class ScaleManager:
@@ -29,7 +27,7 @@ class ScaleManager:
         }
     }
 
-    def __init__(self, scale_name='Major', base_note=Note(), mode=1, arp=ArpeggiatorV2.UP):
+    def __init__(self, scale_name='Major', base_note=Note(), mode=1, arp=Arpeggiator.UP):
         """
         :param scale_name: str
         :param base_note: first note of the scale
@@ -57,11 +55,11 @@ class ScaleManager:
             self._scale = ScaleManager._compute_major_scale(base_note, mode)
         elif scale_name == 'Minor':
             self._scale = ScaleManager._compute_minor_scale(base_note, mode)
+        elif scale_name == 'Whole-tone':
+            self._scale = ScaleManager._compute_wholetone_scale(base_note)
         else:
             print('ERROR: unknown scale "{}"'.format(scale_name))
             exit(0)
-
-        # self.init_arp()
 
     @staticmethod
     def _is_valid_scale(scale_name, base_note, mode):
@@ -122,12 +120,24 @@ class ScaleManager:
         _sc_mode = _sc[(mode - 1):] + _sc[:(mode - 1)]
         return _sc_mode
 
+    @staticmethod
+    def _compute_wholetone_scale(base_note):
+        _sc = [
+            Note.from_str('C4'),
+            Note.from_str('D4'),
+            Note.from_str('E4'),
+            Note.from_str('F#4'),
+            Note.from_str('G#4'),
+            Note.from_str('A#4'),
+        ]
+        return _sc
+
     def set_arp(self, arp_type):
         self._arp_type = arp_type
         self.init_arp()
 
     def init_arp(self):
-        self._arpeggiator = ArpeggiatorV2(self._scale, self._arp_type)
+        self._arpeggiator = Arpeggiator(self._scale, self._arp_type)
 
     def next_arp_note(self):
         return self._arpeggiator.pick_note()

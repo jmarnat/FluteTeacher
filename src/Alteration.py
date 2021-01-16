@@ -1,5 +1,4 @@
 
-
 class Alteration:
     __alt_corresp__ = {'bb': -2, 'b': -1, '': 0, ' ': 0, '#': +1, '##': +2}
 
