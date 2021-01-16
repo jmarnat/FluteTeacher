@@ -6,12 +6,7 @@ Here is a screenshot of the actual version:
 
 ## Features:
 ### Sure:
-- [x] SUPER P0: True scale generator (with intervals)
-- [x] add minor scales
-- [x] add mode computing
-- [x] add empty menu bar
 - [ ] training mode selection:
-  - [x] Scales : Major / Minor
   - [ ] Scales : whole-tone
   - [ ] Modes
   - [ ] Random + difficulty
@@ -37,6 +32,7 @@ Here is a screenshot of the actual version:
 - [ ] for multiple notes: better auto placement (100px + proportion?)
 
 ### Done:
+#### v0.1:
 - [x] main window with 3 rows
 - [x] `next` (note) button
 - [x] upper-left staff draw
@@ -51,6 +47,16 @@ Here is a screenshot of the actual version:
 - [x] on HearAI: no note if SNR < threshold &rarr; set with volume only
 - [x] recognized note display
 - [x] automatic note validation
+
+#### v0.2:
 - [x] add "practice mode" selection
 - [x] change "normal mode" to "random notes"
 - [x] add "scale and modes practice" :
+
+#### v0.3 (to tag!):
+- [x] True scale generator (with intervals)
+- [x] Adding minor scales
+- [x] Mode computing
+- [x] Empty menu bar
+- [x] Scales : Major / Minor
+
