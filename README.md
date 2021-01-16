@@ -4,7 +4,7 @@ Since I'm cheap and nerdy, I've made myself an Artificial Flute Teacher!
 Here is a screenshot of the actual version:
 ![Screen1](doc_res/screen2.png)
 
-## Features:
+## To-do list:
 ### Sure:
 - [ ] training mode selection:
   - [ ] Scales : whole-tone
@@ -31,9 +31,21 @@ Here is a screenshot of the actual version:
 - [ ] better drawings?
 - [ ] for multiple notes: better auto placement (100px + proportion?)
 
-### Done:
-#### v0.1:
-- [x] main window with 3 rows
+## Version History:
+### v0.3:
+- [x] True scale generator (with intervals)
+- [x] Adding minor scales
+- [x] Mode computing
+- [x] Empty menu bar
+- [x] Scales : Major / Minor
+
+### v0.2:
+- [x] add "practice mode" selection
+- [x] change "normal mode" to "random notes"
+- [x] add "scale and modes practice" :
+
+### v0.1:
+- [x] Main window creation with 3 rows
 - [x] `next` (note) button
 - [x] upper-left staff draw
 - [x] upper-left note respondive draw
@@ -47,16 +59,3 @@ Here is a screenshot of the actual version:
 - [x] on HearAI: no note if SNR < threshold &rarr; set with volume only
 - [x] recognized note display
 - [x] automatic note validation
-
-#### v0.2:
-- [x] add "practice mode" selection
-- [x] change "normal mode" to "random notes"
-- [x] add "scale and modes practice" :
-
-#### v0.3:
-- [x] True scale generator (with intervals)
-- [x] Adding minor scales
-- [x] Mode computing
-- [x] Empty menu bar
-- [x] Scales : Major / Minor
-
