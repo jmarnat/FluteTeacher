@@ -8,11 +8,14 @@ Here is a screenshot of the actual version:
 ### Sure:
 - [x] SUPER P0: True scale generator (with intervals)
 - [x] add minor scales
-- [ ] add mode computing
-- [ ] add empty menu bar
-  - [ ] training mode selection
-  - [ ] scale selection (+mode ?)
-  - [ ] "About" window for copyright + website 
+- [x] add mode computing
+- [x] add empty menu bar
+- [ ] training mode selection:
+  - [x] Scales
+  - [ ] Modes
+  - [ ] Random + difficulty
+- [ ] "About" window for copyright + website
+- [ ] add "start at octave" menu 
 - [ ] add French translation
 - [ ] finish notes
 - [ ] add harmonic-minor scales

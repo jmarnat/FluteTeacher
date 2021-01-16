@@ -36,15 +36,23 @@ class ScaleManager:
         :param mode: from 1 to 7
         :param arp: class ArpeggiatorV2
         """
+
+        self._scale = None
+        self._mode = None
+        self._arp_type = None
+        self._arpeggiator = None
+
+        self.set_scale(scale_name, base_note, mode)
+        self.set_arp(arp)
+
+    def set_scale(self, scale_name, base_note, mode=1):
         if not ScaleManager._is_valid_scale(scale_name, base_note, mode):
             print('ERROR: not valid scale "{} {} - mode {}"'.format(str(base_note), scale_name, mode))
             exit(0)
 
-        self._scale = None
-        self._mode = mode
-        self._arp_type = arp
-        self._arpeggiator = None
+        print('ScaleManager: setting scale {} {} - mode {}'.format(str(base_note), scale_name, mode))
 
+        self._mode = mode
         if scale_name == 'Major':
             self._scale = ScaleManager._compute_major_scale(base_note, mode)
         elif scale_name == 'Minor':
@@ -53,7 +61,7 @@ class ScaleManager:
             print('ERROR: unknown scale "{}"'.format(scale_name))
             exit(0)
 
-        self.init_arp()
+        # self.init_arp()
 
     @staticmethod
     def _is_valid_scale(scale_name, base_note, mode):

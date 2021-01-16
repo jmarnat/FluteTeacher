@@ -10,9 +10,61 @@ from src.ScaleManager import ScaleManager
 from src.Arpeggiator import ArpeggiatorV2
 from src.Alteration import Alterations
 
+from functools import partial
+
 VALIDATE_NOTE = True
 BLINKING_TIME = 0.6
 BLINKING_LOOPS = 3
+
+
+class MenuBar(QMenuBar):
+    def __init__(self, parent, flute_teacher):
+        super(MenuBar, self).__init__(parent)
+        self._ft = flute_teacher
+        # self._init_actions()
+        # self._init_menus()
+
+        # def _init_actions(self):
+        self._exit_action = QAction(' &Quit FluteTeacher', self)
+        self._exit_action.setShortcut('Ctrl+Q')
+        self._exit_action.triggered.connect(qApp.quit)
+
+        # def _init_menus(self):
+        self._menu_file = self.addMenu('&File')
+        self._menu_file.addAction(self._exit_action)
+
+        # actions_scale = [
+        #     QAction('C Major', self),
+        #     QAction('D Major', self)
+        # ]
+        self._menu_training = self.addMenu('Training')
+        self._menu_scales = self._menu_training.addMenu('Scales')
+        # self._menu_scales_list = []
+
+        self._scale_actions = dict()
+
+        for scale_name in ScaleManager.VALID_SCALES.keys():
+            local_menu_scale = self._menu_scales.addMenu(scale_name)
+            # self._menu_scales_list.append()
+
+            for scale_alt_str in ScaleManager.VALID_SCALES[scale_name].keys():
+                alt_dict = {'': 'Naturals', '#': 'Sharps', 'b': 'Flats'}
+                local_menu_alt = local_menu_scale.addMenu(alt_dict[scale_alt_str])
+
+                for scale_note in ScaleManager.VALID_SCALES[scale_name][scale_alt_str]:
+                    full_scale_str = '{}{} {}'.format(scale_note, scale_alt_str, scale_name)
+                    _qaction = QAction(full_scale_str, local_menu_alt)
+                    # print('adding action "{}"'.format(full_scale_str))
+                    _qaction.triggered.connect(partial(self.set_training_scale,
+                                                       scale_name,
+                                                       scale_note,
+                                                       scale_alt_str
+                                                       ))
+                    local_menu_alt.addAction(_qaction)
+
+    def set_training_scale(self, scale_name, base_note_letter, base_note_alt_str):
+        base_note_str = "{}{}{}".format(base_note_letter, base_note_alt_str, 4)
+        self._ft.set_scale(scale_name, Note.from_str(base_note_str), mode=1)
 
 
 class MainWindow(QMainWindow):
@@ -22,9 +74,9 @@ class MainWindow(QMainWindow):
         self._autonext = False
         self._listening = False
 
-        # ================================================= #
-        #                   USER INTERFACE                  #
-        # ================================================= #
+        # ==================================================================== #
+        #                             USER INTERFACE                           #
+        # ==================================================================== #
 
         # main window
 
@@ -35,6 +87,26 @@ class MainWindow(QMainWindow):
         # self._window.setGeometry(10, 10, width, height)
         self.setWindowTitle("FluteTeacher")
 
+        # ------------------------------ MENU BAR ------------------------------
+        # # self.statusBar()
+        # self._menu_bar = QMenuBar(self)
+        # self._menu_bar.setGeometry(0, 0, width, 40)
+        # self._file_menu = QMenu(self._menu_bar)
+        # self._file_menu.setObjectName('menuFile')
+        # # self._action_quit = QAction('&Quit', self)
+        # # self._action_quit.setStatusTip('Bye..')
+        # # self._action_quit.triggered.connect(self.quit)
+        # # self._file_menu.addAction(self._action_quit)
+        # self.setMenuBar(self._menu_bar)
+
+        # test 2:
+        # note: we need the space before "&Exit"
+        # menubar = self.menuBar()
+        self._menubar = MenuBar(self, flute_teacher)
+
+
+
+        # --------------------------- CENTER WIDGET ----------------------------
         self._ww = QWidget()
 
         # first row
@@ -68,10 +140,6 @@ class MainWindow(QMainWindow):
         self._button_listening.clicked.connect(self.toggle_listening)
         self._bottom_row_layout.addWidget(self._button_listening)
 
-        # self._button_debug_update = QPushButton('[debug redraw]')
-        # self._button_debug_update.clicked.connect(self.debug_update)
-        # self._bottom_row_layout.addWidget(self._button_debug_update)
-
         # main grid
         self._grid = QGridLayout()
         self._grid.addWidget(self._top_row)
@@ -84,8 +152,10 @@ class MainWindow(QMainWindow):
 
         self.show()
 
-    def update(self):
-        self.update()
+    # noinspection PyMethodMayBeStatic
+    def quit(self):
+        print('bye bye')
+        exit(0)
 
     def toggle_autonext(self):
         self._autonext = not self._autonext
@@ -240,5 +310,7 @@ class FluteTeacher:
         self._main_window.erase_note(staff='right')
         return None
 
-    def set_scale(self, str_name):
-        self._scale_manager = ScaleManager(str_name)
+    def set_scale(self, scale_name, base_note, mode):
+        self._scale_manager.set_scale(scale_name, base_note, mode)
+        self._scale_manager.init_arp()
+        self.next_note()
