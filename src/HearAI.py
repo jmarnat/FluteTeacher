@@ -84,7 +84,7 @@ class HearAI:
                 return note
         return None
 
-    def get_last_note(self, alt):
+    def get_last_note(self, alteration):
         """
             (f0, note, name) with:
             f0:   FFT main frequency
@@ -100,7 +100,7 @@ class HearAI:
         if note_a4_index is None:
             return None
 
-        found_note = Note.from_a440(note_a4_index, alt)
+        found_note = Note.from_a440(note_a4_index, str(alteration))
         print('Hearing:', found_note.to_str())
         return found_note
 

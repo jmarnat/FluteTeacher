@@ -8,6 +8,7 @@ Here is a screenshot of the actual version:
 ### Sure:
 - [x] SUPER P0: True scale generator (with intervals)
 - [x] add minor scales
+- [ ] add mode computing
 - [ ] add empty menu bar
   - [ ] training mode selection
   - [ ] scale selection (+mode ?)

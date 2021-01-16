@@ -27,8 +27,9 @@ class FluteTeacher:
         self._autonext = False
         self._scale_manager = ScaleManager(scale_name='Major',
                                            mode=1,
-                                           base_note=Note('C', 4, Alterations.NATURAL),
-                                           arp=ArpeggiatorV2.THIRDS_UP)
+                                           base_note=Note('D', 4, Alterations.FLAT),
+                                           arp=ArpeggiatorV2.UP)
+
         self._note_mode = FluteTeacher.NOTE_MODE_SCALE
 
         # ================================================= #
@@ -164,7 +165,7 @@ class FluteTeacher:
 
     def hear_sample(self):
         self._hear_ai.record(millis=200)
-        heard_note = self._hear_ai.get_last_note(alt=self._current_note.alt)
+        heard_note = self._hear_ai.get_last_note(alteration=self._current_note.alteration)
 
         if heard_note is not None:
             self._heard_note = heard_note

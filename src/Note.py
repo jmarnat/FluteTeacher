@@ -21,7 +21,7 @@ class Note:
         """
         :param letter: should be A -> G
         :param octave: ideally 4 -> 6~7
-        :param alt: '', '#' or 'b'
+        :param alteration: from class Alteration
         """
         self.letter = letter
         self.octave = octave
@@ -81,41 +81,37 @@ class Note:
         return _note_decay + _octave_devay + _alt_decay
 
     @staticmethod
-    def from_a440(a440_ref, alt):
-        return Note.from_midi_number(a440_ref + 69, alt)
+    def from_a440(a440_ref, alt_str):
+        return Note.from_midi_number(a440_ref + 69, alt_str)
 
     @staticmethod
-    def from_midi_number(midi_number, alt=None):
-        _alt = alt if (alt in ['#', 'b']) else '#'
+    def from_midi_number(midi_number, alt_str=None):
+        _alt = alt_str if (alt_str in ['#', 'b']) else '#'
         note_name = Note.NOTES_NAMES[_alt]
-        found_note_str = note_name[midi_number % 12]
-        note_letter = found_note_str[0]
-        note_alt = found_note_str[1] if (len(found_note_str) == 2) else ''
         note_octave = (midi_number // 12) - 1
-        return Note(note_letter, note_octave, note_alt)
+        found_note_str = note_name[midi_number % 12] + str(note_octave)
+        return Note.from_str(found_note_str)
 
     @staticmethod
     def from_str(note_str):
         _ltr = note_str[0]
         _oct = int(note_str[-1])
-        _alt = note_str[1] if len(note_str) == 3 else ''
-        return Note(_ltr, _oct, _alt)
+        _alt_str = note_str[1] if len(note_str) == 3 else ''
+        return Note(_ltr, _oct, Alteration(alt_str=_alt_str))
 
     @staticmethod
     def random_bis(difficulty=1):
         if difficulty == 1:
             _letters = ['C', 'D', 'E', 'F', 'G', 'A']
             _alts = ['', 'b', '#']
-            return Note(letter=random.choice(_letters), octave=4, alt='')
+            return Note(letter=random.choice(_letters), octave=4, alteration=Alterations.NATURAL)
         if difficulty == 2:
             _alt = random.choice(['b', '#'])
             _note_str = random.choice(Note.NOTES_NAMES[_alt])
-            note_letter = _note_str[0]
-            note_alt = _note_str[1] if len(_note_str) == 2 else ''
-            return Note(letter=note_letter, octave=4, alt=note_alt)
+            return Note.from_str(_note_str)
 
-        print('unknown difficulty!')
-        return Note(letter='C', octave=4, alt='')
+        print('WARNING: unknown difficulty "{}" !'.format(difficulty))
+        return Note(letter='C', octave=4)
 
     @staticmethod
     def random_note(difficulty, last_note=None):
