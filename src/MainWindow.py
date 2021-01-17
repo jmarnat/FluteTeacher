@@ -53,17 +53,20 @@ class MenuBar(QMenuBar):
         self._menu_arps = self.addMenu('Arpeggiators')
         self._menu_arps_actions = {}
         _arp_dict = Arpeggiator.arp_dict()
-        for _arp_kind, _arp_kind_str in _arp_dict.items():
-            for _noct, _noct_str in Arpeggiator.noct_dict().items():
-                _arp_full_str = "{} - {}".format(_arp_kind_str, _noct_str)
+        for _noct, _noct_str in Arpeggiator.noct_dict().items():
+            for _arp_kind, _arp_kind_str in _arp_dict.items():
+                # _arp_full_str = "{} - {}".format(_arp_kind_str, _noct_str)
+                _arp_full_str = "{} - {}".format(_noct_str, _arp_kind_str)
                 _qaction = QAction(_arp_full_str, self._menu_arps)
                 _qaction.setCheckable(True)
-                if _arp_full_str == "Up - 1 Octave":
+                # if _arp_full_str == "Up - 1 Octave":
+                if _arp_full_str == "1 Octave - Up":
                     _qaction.setChecked(True)
                 _qaction.triggered.connect(partial(self.set_arpeggiator, _arp_kind, _noct))
                 self._menu_arps_actions[(_arp_kind, _noct)] = _qaction
                 self._menu_arps.addAction(_qaction)
-            if _arp_kind_str in list(_arp_dict.values())[:-1]:
+            # if _arp_kind_str in list(_arp_dict.values())[:-1]:
+            if _noct_str in list(Arpeggiator.noct_dict().values())[:-1]:
                 self._menu_arps.addSeparator()
 
         # ------------------------------------------------ FINGERINGS ------------------------------------------------ #
