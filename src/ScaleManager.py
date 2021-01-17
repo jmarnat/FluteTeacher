@@ -4,10 +4,26 @@ from src.Note import Note
 
 class ScaleManager:
     VALID_MODES = {
-        'Major': (1, 2, 3, 4, 5, 6, 7),
-        'Minor': (1, 2, 3, 4, 5, 6, 7),
-        'Whole-tone': [1],
-        'Chromatic': [1]
+        'Major': {
+            1: 'Ionian',
+            2: 'Dorian',
+            3: 'Phrygian',
+            4: 'Lydian',
+            5: 'Mixolydian',
+            6: 'Aeolian (Minor)',
+            7: 'Locrian'
+        },
+        'Minor': {
+            1: 'Aeolian',
+            2: 'Locrian',
+            3: 'Ionian (Major)',
+            4: 'Dorian',
+            5: 'Phrygian',
+            6: 'Lydian',
+            7: 'Mixolydian',
+        },
+        'Whole-tone': {1: 'Whole-tone'},
+        'Chromatic': {1: 'Chromatic'}
     }
 
     VALID_SCALES = {
@@ -75,7 +91,7 @@ class ScaleManager:
             return False
         if _letter not in ScaleManager.VALID_SCALES[self._scale_name][_alt]:
             return False
-        if self._mode not in ScaleManager.VALID_MODES[self._scale_name]:
+        if self._mode not in ScaleManager.VALID_MODES[self._scale_name].keys():
             return False
         return True
 
@@ -157,6 +173,13 @@ class ScaleManager:
         for i in range(add_octave):
             _sc = [note.get_8va() for note in _sc]
         return _sc
+
+    def get_mode(self, mode=1, add_octave=0):
+        _scale = self.get_scale(add_octave=add_octave)
+        _mode = mode-1
+        _part_a = _scale[_mode:]
+        _part_b = [n.get_8va() for n in _scale[:_mode]]
+        return _part_a + _part_b
 
     def set_octave(self, octave=4):
         self._base_note = self._base_note.get_8va(octave - self._base_note.octave)
