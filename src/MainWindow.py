@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import *
 from functools import partial
+from PyQt5.QtCore import Qt
 
 from src.Staff import Staff
 from src.Note import Note
@@ -12,12 +13,6 @@ class MenuBar(QMenuBar):
     def __init__(self, parent, flute_teacher):
         super(MenuBar, self).__init__(parent)
         self._ft = flute_teacher
-
-        # self._exit_action = QAction(' &Quit FluteTeacher', self)
-        # self._exit_action.setShortcut('Ctrl+Q')
-        # self._exit_action.triggered.connect(qApp.quit)
-        # self._menu_file = self.addMenu('&File')
-        # self._menu_file.addAction(self._exit_action)
 
         self._menu_scales = self.addMenu('Scales')
         for scale_name in ScaleManager.VALID_SCALES.keys():
@@ -54,9 +49,6 @@ class MenuBar(QMenuBar):
             if _arp_kind_str in list(_arp_dict.values())[:-1]:
                 self._menu_arps.addSeparator()
 
-    # def closeEvent(self, QCloseEvent):
-    #     print('MainWindow closing, byebye')
-
     def set_training_scale(self, scale_name, base_note_letter, base_note_alt_str):
         base_note_str = "{}{}{}".format(base_note_letter, base_note_alt_str, 4)
         _new_scale_mgr = ScaleManager(scale_name, Note.from_str(base_note_str), mode=1)
@@ -77,10 +69,6 @@ class MainWindow(QMainWindow):
         self._autonext = False
         self._listening = False
 
-        # ==================================================================== #
-        #                             USER INTERFACE                           #
-        # ==================================================================== #
-
         # ------------------------- MAIN WINDOW (self) ----------------------- #
 
         screen_size = qApp.desktop().availableGeometry().size()
@@ -95,6 +83,9 @@ class MainWindow(QMainWindow):
 
         # --------------------------- CENTER WIDGET -------------------------- #
         self._ww = QWidget()
+        self._ww_layout = QGridLayout()
+        self._ww.setLayout(self._ww_layout)
+        self._ww.setMinimumWidth(500)
 
         # FIRST ROW
         self._top_row = QGroupBox()
@@ -112,28 +103,33 @@ class MainWindow(QMainWindow):
 
         # BOTTOM ROW
         self._bottom_row = QGroupBox()
-        self._bottom_row_layout = QHBoxLayout()
+        self._bottom_row_layout = QHBoxLayout(self._bottom_row)
         self._bottom_row.setLayout(self._bottom_row_layout)
 
-        self._next_button = QPushButton('next')
+        self._next_button = QPushButton('Next note')
         self._next_button.clicked.connect(self._ft.next_note)
+        self._next_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self._bottom_row_layout.addWidget(self._next_button)
 
         self._button_autonext = QPushButton('Enable AutoNext' if not self._autonext else 'Disable AutoNext')
         self._button_autonext.clicked.connect(self.toggle_autonext)
+        self._button_autonext.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self._bottom_row_layout.addWidget(self._button_autonext)
 
         self._button_listening = QPushButton('Start listening' if not self._listening else 'Stop listening')
+        self._button_listening.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self._button_listening.clicked.connect(self.toggle_listening)
+
         self._bottom_row_layout.addWidget(self._button_listening)
 
         # main grid
-        self._grid = QGridLayout()
-        self._grid.addWidget(self._top_row)
-        self._grid.addWidget(self.fingering)
-        self._grid.addWidget(self._bottom_row)
+        self._top_row.setMinimumHeight(200)
+        self.fingering.setMinimumHeight(200)
+        self._bottom_row.setFixedHeight(60)
 
-        self._ww.setLayout(self._grid)
+        self._ww_layout.addWidget(self._top_row)
+        self._ww_layout.addWidget(self.fingering)
+        self._ww_layout.addWidget(self._bottom_row)
 
         self.setCentralWidget(self._ww)
 

@@ -9,8 +9,10 @@ from src.MainWindow import MainWindow
 
 
 VALIDATE_NOTE = True
-BLINKING_TIME = 0.6
-BLINKING_LOOPS = 3
+VALIDATE_TIME = 0.2
+
+# BLINKING_TIME = 0.6
+# BLINKING_LOOPS = 3
 
 
 class FluteTeacher:
@@ -57,33 +59,30 @@ class FluteTeacher:
         print('FT: stop listening')
         self._listening = False
 
-    def blink_notes(self):
-        btime = (BLINKING_TIME / (2 * BLINKING_LOOPS))
-        for blink_loop in range(BLINKING_LOOPS):
-            self._main_window.display_note(staff='left', note=self._current_note, ndec=0)
-            self._main_window.display_note(staff='right', note=self._current_note, ndec=0)
-            sleep(btime)
-            self._main_window.erase_note(staff='left')
-            self._main_window.erase_note(staff='right')
-            sleep(btime)
-        return
+    # def blink_notes(self):
+    #     btime = (BLINKING_TIME / (2 * BLINKING_LOOPS))
+    #     for blink_loop in range(BLINKING_LOOPS):
+    #         self._main_window.display_note(staff='left', note=self._current_note, ndec=0)
+    #         self._main_window.display_note(staff='right', note=self._current_note, ndec=0)
+    #         sleep(btime)
+    #         self._main_window.erase_note(staff='left')
+    #         self._main_window.erase_note(staff='right')
+    #         if blink_loop < (BLINKING_LOOPS - 1):
+    #             sleep(btime)
+    #     return
+
+    def validate_notes_gui(self):
+        self._main_window.display_note(staff='left', note=self._current_note, ndec=0)
+        self._main_window.display_note(staff='right', note=self._current_note, ndec=0)
+        sleep(VALIDATE_TIME)
+        self._main_window.erase_note(staff='left')
+        self._main_window.erase_note(staff='right')
 
     def next_note(self, validate=False):
         if VALIDATE_NOTE and validate and (self._current_note is not None):
-            thr = threading.Thread(target=self.blink_notes())
-            print('blinking thread')
-            thr.start()
-            thr.join()
-            print('done.')
+            self.validate_notes_gui()
 
-        # if self._note_mode == FluteTeacher.NOTE_MODE_RANDOM_1:
-        #     self._current_note = Note.random_note(difficulty=1, last_note=self._current_note)
-        # elif self._note_mode == FluteTeacher.NOTE_MODE_RANDOM_2:
-        #     self._current_note = Note.random_note(difficulty=2, last_note=self._current_note)
-        # elif self._note_mode == FluteTeacher.NOTE_MODE_SCALE:
         self._current_note = self._arpeggiator.pick_note()
-        # else:
-        #     exit(0)
 
         if self._current_note is None:
             print('ERROR: NEW NOTE IS NONE')
@@ -107,15 +106,11 @@ class FluteTeacher:
         return None
 
     def set_start_octave(self, start_octave=4):
-        # self._start_octave = start_octave
-        # self._scale_manager = ScaleManager('Major', Note('C', self._start_octave), mode=1)
-        print('flute teacher, setting start_octave to {}'.format(start_octave))
         self._scale_manager.set_octave(start_octave)
         self._arpeggiator.set_scale_manager(self._scale_manager)
         self.next_note()
 
     def set_scale_manager(self, scale_manager):
-        # self._scale_manager = ScaleManager(scale_name, base_note, mode)
         self._scale_manager = scale_manager
         self._arpeggiator.set_scale_manager(self._scale_manager)
         self.next_note()

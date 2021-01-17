@@ -1,6 +1,8 @@
+from numpy.random import permutation
 
 
 class Arpeggiator:
+    RANDOM = 0
     UP = 1
     UP_DOWN = 2
     DOWN = 3
@@ -8,7 +10,7 @@ class Arpeggiator:
     # THIRDS_DOWN = 5
     # THIRDS_UP_DOWN = 6
 
-    def __init__(self, scale_manager, kind=UP, n_octaves=1, start_octave=4):
+    def __init__(self, scale_manager, kind=UP, n_octaves=1):
         self._notes = []
         self._scale_manager = scale_manager
         self._kind = kind
@@ -34,7 +36,9 @@ class Arpeggiator:
         self._pos = 0
         self._isdone = False
 
-        if self._kind == Arpeggiator.UP:
+        if self._kind == Arpeggiator.RANDOM:
+            self._init_mode_random()
+        elif self._kind == Arpeggiator.UP:
             self._init_mode_up()
         elif self._kind == Arpeggiator.UP_DOWN:
             self._init_mode_updown()
@@ -44,20 +48,19 @@ class Arpeggiator:
             print('WARNING: ArpeggiatorV2: no mode {}'.format(self._kind))
             self._init_mode_up()
 
+    def _init_mode_random(self):
+        self._init_mode_up()
+        self._notes = permutation(self._notes)
+
     def _init_mode_up(self):
         self._notes = []
         for _oct in range(self._noct):
-            _sc = self._scale_manager.get_scale(add_octave=_oct, )
-            self._notes += _sc
+            self._notes += self._scale_manager.get_scale(add_octave=_oct)
         self._notes.append(self._scale_manager.get_scale()[0].get_8va(noct=self._noct))
-        print('MODE UP, NOCT=', self._noct)
-        print('MODE UP, NOTES: ', ', '.join([str(n) for n in self._notes]))
-        return
 
     def _init_mode_updown(self):
         self._init_mode_up()
         self._notes += self._notes[:-1][::-1]
-        return
 
     def _init_mode_thirds_up(self):
         self._init_mode_up()
@@ -73,7 +76,6 @@ class Arpeggiator:
                 self._notes.append(note_b.get_8va(_oct))
 
         self._notes.append(_sc[0].get_8va(self._noct))
-        return
 
     def to_str(self):
         return str(self)
@@ -81,6 +83,7 @@ class Arpeggiator:
     @staticmethod
     def arp_dict():
         return {
+            Arpeggiator.RANDOM: "Random",
             Arpeggiator.UP: "Up",
             Arpeggiator.UP_DOWN: "Up/Down",
             Arpeggiator.DOWN: "Down",
@@ -109,6 +112,9 @@ class Arpeggiator:
         if self._pos == (len(self._notes) - 1):
             self._isdone = True
             self._pos = 0
+            # in the RANDOM case, change permutation each time.
+            if self._kind == Arpeggiator.RANDOM:
+                self._init_mode_random()
         else:
             self._isdone = False
             self._pos += 1
@@ -116,13 +122,3 @@ class Arpeggiator:
 
     def is_done(self):
         return self._isdone
-
-    # def set_mode(self, arp_mode):
-    #     self._mode = arp_mode
-    #     self.init_arp()
-
-    # def next_arp_note(self):
-    #     return self.pick_note()
-
-    # def is_arp_done(self):
-    #     return self.is_done()
