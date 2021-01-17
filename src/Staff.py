@@ -22,7 +22,9 @@ class Staff(QWidget):
         self.qimages = {
             'sharp': QImage('res/sharp.png'),
             'flat': QImage('res/flat.png'),
-            'g-clef': QImage('res/g-clef.png')
+            'g-clef': QImage('res/g-clef.png'),
+            'double-sharp': QImage('res/double-sharp.png'),
+            'double-flat': QImage('res/double-flat.png'),
         }
 
     def mid_height(self):
@@ -134,7 +136,7 @@ class Staff(QWidget):
             bar_ypos_b = int(bar_ypos_a - (3.5 * lh))
             qp.drawLine(bar_xpos, bar_ypos_a, bar_xpos, bar_ypos_b)
 
-        # sharp if needed
+        # sharp(s) of flat(s) if needed
         qp.setPen(QColor(COLOR_NORMAL))
         if str(note.alteration) == '#':
             sharp_h = int(3 * lh)
@@ -148,3 +150,15 @@ class Staff(QWidget):
             flat_xpos = int(note_center_xpos - flat_w - 5)
             flat_ypos = int(self.mid_height() - (note_index * lh / 2) - (flat_h * 0.75))
             qp.drawImage(QRect(flat_xpos, flat_ypos, flat_w, flat_h), self.qimages['flat'])
+        elif str(note.alteration) == '##':
+            sharp_h = int(lh)
+            sharp_w = int(sharp_h * (self.qimages['double-sharp'].width() / self.qimages['double-sharp'].height()))
+            sharp_xpos = int(note_center_xpos - sharp_h / 2)
+            sharp_ypos = int(self.mid_height() - (note_index * lh/2) - (sharp_h / 2))
+            qp.drawImage(QRect(sharp_xpos, sharp_ypos, sharp_w, sharp_h), self.qimages['double-sharp'])
+        elif str(note.alteration) == 'bb':
+            flat_h = int(2.5 * lh)
+            flat_w = int(flat_h * (self.qimages['double-flat'].width() / self.qimages['double-flat'].height()))
+            flat_xpos = int(note_center_xpos - flat_w - 5)
+            flat_ypos = int(self.mid_height() - (note_index * lh / 2) - (flat_h * 0.75))
+            qp.drawImage(QRect(flat_xpos, flat_ypos, flat_w, flat_h), self.qimages['double-flat'])

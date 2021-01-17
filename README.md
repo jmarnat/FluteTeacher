@@ -9,18 +9,12 @@ Here is a screenshot of the actual version:
 - [ ] Add a tuner in HearAI
 - [ ] Add the tuner in GUI
 - [ ] Add the option in the menubar
-### MenuBar:
-- [ ] Modes
-### Scales:
-- [ ] add harmonic-minor scales
-- [ ] add melodic-minor scales
 ### Staffs:
 - [ ] add view choices : single / continuous
 - [ ] add corresponding GUI option
 ### Fingering:
 - [ ] add color for optional fingers 
 - [ ] How to treat multiple fingering possibilities ?? (ex: A#4)
-
 ### Arpeggiator:
 - [ ] THIRDS_UP_DOWN
 - [ ] Treat random as random choice over current scale
@@ -38,12 +32,10 @@ Here is a screenshot of the actual version:
   - [ ] or the full scale
 - [ ] Add proper close function
 - [ ] Add 'bécarre'
-
 ### For compilation:
 - [ ] check requirements
 - [ ] compile on MacOS
 - [ ] compile on Windows 10
-
 ### Maybe:
 - [ ] adding register information + draw ?
 - [ ] encapsulate in a specific window
@@ -52,6 +44,17 @@ Here is a screenshot of the actual version:
 - [ ] for multiple notes: better auto placement (100px + proportion?)
 
 ## Version History:
+### v0.5
+- Starting note and octave:
+- Change to `Start from note` -> `Octave` -> `Note`
+- Scale and Modes
+  - Make modes only from Major, Minor harmonic and Minor melodic scales
+  - MenuBar integration -> look alright 
+- Scales:
+  - add harmonic-minor scales
+  - add melodic-minor scales
+  - add pentatonics
+
 ### v0.4:
 - Scales:
   - Whole-tone scale + mode

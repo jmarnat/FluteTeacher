@@ -7,6 +7,7 @@ from src.Note import Note
 from src.Fingering import Fingering
 from src.ScaleManager import ScaleManager
 from src.Arpeggiator import Arpeggiator
+from src.Alteration import Alterations
 
 
 class MenuBar(QMenuBar):
@@ -14,40 +15,59 @@ class MenuBar(QMenuBar):
         super(MenuBar, self).__init__(parent)
         self._ft = flute_teacher
 
-        # -------------------------------------------------- SCALES -------------------------------------------------- #
-        self._menu_scales = self.addMenu('Scales')
-        self._menu_scales_actions = {}
-        for scale_name in ScaleManager.VALID_SCALES.keys():
-            local_menu_scale = self._menu_scales.addMenu("{} scales".format(scale_name))
-            _alts = list(ScaleManager.VALID_SCALES[scale_name].keys())
-            for _alt_str in _alts:
-                for scale_note in ScaleManager.VALID_SCALES[scale_name][_alt_str]:
-                    full_scale_str = '{}{} {}'.format(scale_note, _alt_str, scale_name)
-                    _qaction = QAction(full_scale_str, local_menu_scale)
-                    _qaction.triggered.connect(partial(self.set_training_scale,
-                                                       scale_name,
-                                                       scale_note,
-                                                       _alt_str
-                                                       ))
-                    local_menu_scale.addAction(_qaction)
-                    _qaction.setCheckable(True)
-                    if full_scale_str == 'C Major':
-                        _qaction.setChecked(True)
-                    self._menu_scales_actions[(scale_name, scale_note, _alt_str)] = _qaction
-                if _alt_str in _alts[:-1]:
-                    local_menu_scale.addSeparator()
+        # --------------------------------------------- SCALES AND MODES --------------------------------------------- #
+        self._menu_scales = self.addMenu('Scales and Modes')
+        self._menu_scales_qactions = {}
 
-        self._menu_scales.addSeparator()
-        self._menu_octave = self._menu_scales.addMenu('Start from octave..')
-        self._menu_octave_qactions = {}
-        for octave, octave_name in {4: '4 (Middle C)', 5: '5', 6: '6'}.items():
-            _qaction = QAction(octave_name, self._menu_octave)
-            _qaction.triggered.connect(partial(self.set_training_octave, octave))
+        for scale_name, modes in ScaleManager.VALID_MODES.items():
+            if modes is not None:
+                menu_modes = self._menu_scales.addMenu(scale_name)
+                for mode_deg, mode_name in modes.items():
+                    # mode_fullname = "{} - {}".format(mode_deg, mode_name)
+                    _qaction = QAction(mode_name)
+                    _qaction.triggered.connect(partial(self.set_training_scale, scale_name, mode_deg))
+                    _qaction.setCheckable(True)
+                    if (scale_name, mode_deg) == ('Major', 1):
+                        _qaction.setChecked(True)
+                    menu_modes.addAction(_qaction)
+                    self._menu_scales_qactions[(scale_name, mode_deg)] = _qaction
+            else:
+                _qaction = QAction(scale_name)
+                _qaction.triggered.connect(partial(self.set_training_scale, scale_name, None))
+                _qaction.setCheckable(True)
+                self._menu_scales.addAction(_qaction)
+                self._menu_scales_qactions[(scale_name, None)] = _qaction
+
+        # ----------------------------------------- STARTING OCTAVE AND NOTE ----------------------------------------- #
+        self._menu_start_from = self.addMenu('Start from')
+
+        self._menu_start_from_basenote = self._menu_start_from.addMenu('Base note')
+        self._menu_start_from_basenote_qactions = {}
+        for _alt in [Alterations.NATURAL, Alterations.FLAT, Alterations.SHARP]:
+            for _letter in "CDEFGAB":
+                _note_str = "{}{}".format(_letter, str(_alt))
+                if _note_str in ['Cb', 'Fb', 'B#', 'E#']:
+                    continue
+                _qaction = QAction(_note_str)
+                _qaction.triggered.connect(partial(self.set_training_base_note, _letter, _alt))
+                _qaction.setCheckable(True)
+                if _note_str == 'C':
+                    _qaction.setChecked(True)
+                self._menu_start_from_basenote.addAction(_qaction)
+                self._menu_start_from_basenote_qactions[(_letter, _alt)] = _qaction
+            if str(_alt) in ('', 'b'):
+                self._menu_start_from_basenote.addSeparator()
+
+        self._menu_start_from_oct = self._menu_start_from.addMenu('Octave')
+        self._menu_start_from_oct_qactions = {}
+        for _oct_val, _oct_str in {4: '4 (Middle C)', 5: '5', 6: '6'}.items():
+            _qaction = QAction(_oct_str)
+            _qaction.triggered.connect(partial(self.set_training_octave, _oct_val))
             _qaction.setCheckable(True)
-            if octave == 4:
+            if _oct_val == 4:
                 _qaction.setChecked(True)
-            self._menu_octave.addAction(_qaction)
-            self._menu_octave_qactions[octave] = _qaction
+            self._menu_start_from_oct.addAction(_qaction)
+            self._menu_start_from_oct_qactions[_oct_val] = _qaction
 
         # ----------------------------------------------- ARPEGGIATORS ----------------------------------------------- #
         self._menu_arps = self.addMenu('Arpeggiators')
@@ -55,17 +75,14 @@ class MenuBar(QMenuBar):
         _arp_dict = Arpeggiator.arp_dict()
         for _noct, _noct_str in Arpeggiator.noct_dict().items():
             for _arp_kind, _arp_kind_str in _arp_dict.items():
-                # _arp_full_str = "{} - {}".format(_arp_kind_str, _noct_str)
                 _arp_full_str = "{} - {}".format(_noct_str, _arp_kind_str)
                 _qaction = QAction(_arp_full_str, self._menu_arps)
                 _qaction.setCheckable(True)
-                # if _arp_full_str == "Up - 1 Octave":
                 if _arp_full_str == "1 Octave - Up":
                     _qaction.setChecked(True)
                 _qaction.triggered.connect(partial(self.set_arpeggiator, _arp_kind, _noct))
                 self._menu_arps_actions[(_arp_kind, _noct)] = _qaction
                 self._menu_arps.addAction(_qaction)
-            # if _arp_kind_str in list(_arp_dict.values())[:-1]:
             if _noct_str in list(Arpeggiator.noct_dict().values())[:-1]:
                 self._menu_arps.addSeparator()
 
@@ -95,20 +112,26 @@ class MenuBar(QMenuBar):
             self._menu_fingerings.addAction(_qaction_fgr_delay)
             self._menu_fingerings_actions[(Fingering.DISPLAY_DELAY, d)] = _qaction_fgr_delay
 
-    def set_training_scale(self, scale_name, base_note_letter, base_note_alt_str):
-        base_note_str = "{}{}{}".format(base_note_letter, base_note_alt_str, 4)
-        _new_scale_mgr = ScaleManager(scale_name, Note.from_str(base_note_str), mode=1)
-        self._ft.set_scale_manager(_new_scale_mgr)
+    def set_training_scale(self, scale_name, mode):
+        self._ft.set_scale(scale_name, mode)
+        for (_scale_name, _scale_deg), _qaction in self._menu_scales_qactions.items():
+            if (_scale_name, _scale_deg) == (scale_name, mode):
+                _qaction.setChecked(True)
+            else:
+                _qaction.setChecked(False)
 
-        for (_scale_name, _scale_note, _alt_str), _qaction in self._menu_scales_actions.items():
-            if (_scale_name, _scale_note, _alt_str) == (scale_name, base_note_letter, base_note_alt_str):
+    def set_training_base_note(self, note_letter, alteration):
+        self._ft.set_base_note(note_letter, alteration)
+        # _menu_start_from_basenote_qactions[(_alt, _letter)]
+        for (_letter, _alt), _qaction in self._menu_start_from_basenote_qactions.items():
+            if (_letter, _alt) == (note_letter, alteration):
                 _qaction.setChecked(True)
             else:
                 _qaction.setChecked(False)
 
     def set_training_octave(self, octave):
         self._ft.set_start_octave(octave)
-        for _oct, _qaction in self._menu_octave_qactions.items():
+        for _oct, _qaction in self._menu_start_from_oct_qactions.items():
             if _oct == octave:
                 _qaction.setChecked(True)
             else:

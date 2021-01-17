@@ -16,8 +16,8 @@ class FluteTeacher:
     def __init__(self):
         self._current_note = None
         self._heard_note = None
-        self._listening = True
-        self._autonext = True
+        self._listening = False
+        self._autonext = False
         self._start_octave = 4
 
         # MAIN WINDOW
@@ -96,6 +96,16 @@ class FluteTeacher:
 
     def set_start_octave(self, start_octave=4):
         self._scale_manager.set_octave(start_octave)
+        self._arpeggiator.set_scale_manager(self._scale_manager)
+        self.next_note()
+
+    def set_base_note(self, letter, alteration):
+        self._scale_manager.set_basenote(letter, alteration)
+        self._arpeggiator.set_scale_manager(self._scale_manager)
+        self.next_note()
+
+    def set_scale(self, scale_name, mode):
+        self._scale_manager.set_scale(scale_name, mode)
         self._arpeggiator.set_scale_manager(self._scale_manager)
         self.next_note()
 
