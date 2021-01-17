@@ -49,6 +49,19 @@ class MenuBar(QMenuBar):
             if _arp_kind_str in list(_arp_dict.values())[:-1]:
                 self._menu_arps.addSeparator()
 
+        self._menu_fingerings = self.addMenu('Fingerings')
+        _qaction_fgr_always = QAction('Always show', self._menu_fingerings)
+        _qaction_fgr_always.triggered.connect(partial(self.set_fingering_display_mode, Fingering.DISPLAY_ALWAYS, None))
+        self._menu_fingerings.addAction(_qaction_fgr_always)
+        _qaction_fgr_hide = QAction('Always hide', self._menu_fingerings)
+        _qaction_fgr_hide.triggered.connect(partial(self.set_fingering_display_mode, Fingering.DISPLAY_NEVER, None))
+        self._menu_fingerings.addAction(_qaction_fgr_hide)
+        self._menu_fingerings.addSeparator()
+        for d in (1, 2, 3, 4, 5):
+            _qaction_fgr_delay = QAction('Show after {}s'.format(d), self._menu_fingerings)
+            _qaction_fgr_delay.triggered.connect(partial(self.set_fingering_display_mode, Fingering.DISPLAY_DELAY, d))
+            self._menu_fingerings.addAction(_qaction_fgr_delay)
+
     def set_training_scale(self, scale_name, base_note_letter, base_note_alt_str):
         base_note_str = "{}{}{}".format(base_note_letter, base_note_alt_str, 4)
         _new_scale_mgr = ScaleManager(scale_name, Note.from_str(base_note_str), mode=1)
@@ -57,9 +70,11 @@ class MenuBar(QMenuBar):
     def set_training_octave(self, octave):
         self._ft.set_start_octave(octave)
 
-    # noinspection PyMethodMayBeStatic
     def set_arpeggiator(self, kind, n_octaves):
         self._ft.set_arpeggiator(kind, n_octaves)
+
+    def set_fingering_display_mode(self, mode, delay):
+        self._ft.set_fingering_display_mode(mode, delay)
 
 
 class MainWindow(QMainWindow):

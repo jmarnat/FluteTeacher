@@ -12,7 +12,7 @@ Here is a screenshot of the actual version:
 ### MenuBar:
 - [x] add Arpeggiators
 - [ ] check current scale / octave / arp
-- [ ] training mode selection:
+- [ ] training mode selection -> arp nan ?
 - [ ] Modes
 - [ ] Random note from scale + difficulty
 ### Scales:
@@ -24,10 +24,10 @@ Here is a screenshot of the actual version:
 ### Fingering:
 - [ ] add color for optional fingers 
 - [ ] How to treat multiple fingering possibilities ?? (ex: A#4)
-- [ ] add following options :
-  - [ ] constant help
-  - [ ] fingering (after X secs)
-  - [ ] disabled
+- [x] add following options :
+  - [x] constant help
+  - [x] fingering (after X secs)
+  - [x] disabled
 ### Arpeggiator:
 - [ ] THIRDS_UP_DOWN
 - [ ] Treat random as random choice over current scale

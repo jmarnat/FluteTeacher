@@ -11,9 +11,6 @@ from src.MainWindow import MainWindow
 VALIDATE_NOTE = True
 VALIDATE_TIME = 0.2
 
-# BLINKING_TIME = 0.6
-# BLINKING_LOOPS = 3
-
 
 class FluteTeacher:
     def __init__(self):
@@ -58,18 +55,6 @@ class FluteTeacher:
     def stop_listening(self):
         print('FT: stop listening')
         self._listening = False
-
-    # def blink_notes(self):
-    #     btime = (BLINKING_TIME / (2 * BLINKING_LOOPS))
-    #     for blink_loop in range(BLINKING_LOOPS):
-    #         self._main_window.display_note(staff='left', note=self._current_note, ndec=0)
-    #         self._main_window.display_note(staff='right', note=self._current_note, ndec=0)
-    #         sleep(btime)
-    #         self._main_window.erase_note(staff='left')
-    #         self._main_window.erase_note(staff='right')
-    #         if blink_loop < (BLINKING_LOOPS - 1):
-    #             sleep(btime)
-    #     return
 
     def validate_notes_gui(self):
         self._main_window.display_note(staff='left', note=self._current_note, ndec=0)
@@ -118,3 +103,6 @@ class FluteTeacher:
     def set_arpeggiator(self, kind, n_octaves):
         self._arpeggiator = Arpeggiator(self._scale_manager, kind, n_octaves)
         self.next_note()
+
+    def set_fingering_display_mode(self, mode, delay):
+        self._main_window.fingering.set_display_mode(mode, delay)
