@@ -16,33 +16,40 @@ class Fingering(QWidget):
     DISPLAY_DELAY = 2
     DISPLAY_NEVER = 3
 
-    def __init__(self, display_mode=DISPLAY_DELAY, display_delay=3):
+    def __init__(self, display_mode=DISPLAY_ALWAYS, display_delay=3):
         super(Fingering, self).__init__()
 
         self.keys = []
 
         self.midi_fingerings = {
-            60: {'left': [2, 3, 4, 5], 'right': [1, 3, 5, 7, 8]},  # C  4
-            61: {'left': [2, 3, 4, 5], 'right': [1, 3, 5, 7]},     # C# 4
-            62: {'left': [2, 3, 4, 5], 'right': [1, 3, 5]},        # D  4
-            63: {'left': [2, 3, 4, 5], 'right': [1, 3, 5, 6]},     # D# 4
-            64: {'left': [2, 3, 4, 5], 'right': [1, 3, 6]},        # E  4
-            65: {'left': [2, 3, 4, 5], 'right': [1, 6]},           # F  4
-            66: {'left': [2, 3, 4, 5], 'right': [5, 6]},           # F# 4
-            67: {'left': [2, 3, 4, 5], 'right': [6]},              # G  4
-            68: {'left': [2, 3, 4, 5, 6], 'right': [6]},           # G# 4
-            69: {'left': [2, 3, 4], 'right': [6]},                 # A  4
-            70: {'left': [2, 3], 'right': [1, 6]},                 # A# 4
-            71: {'left': [2, 3], 'right': [6]},                    # B  4
+            60: {'left': [2, 3, 4, 5],     'right': [1, 3, 5, 7, 8]},  # C  4
+            61: {'left': [2, 3, 4, 5],     'right': [1, 3, 5, 7]},     # C# 4
+            62: {'left': [2, 3, 4, 5],     'right': [1, 3, 5]},        # D  4
+            63: {'left': [2, 3, 4, 5],     'right': [1, 3, 5, 6]},     # D# 4
+            64: {'left': [2, 3, 4, 5],     'right': [1, 3, 6]},        # E  4
+            65: {'left': [2, 3, 4, 5],     'right': [1, 6]},           # F  4
+            66: {'left': [2, 3, 4, 5],     'right': [5, 6]},           # F# 4
+            67: {'left': [2, 3, 4, 5],     'right': [6]},              # G  4
+            68: {'left': [2, 3, 4, 5, 6],  'right': [6]},              # G# 4
+            69: {'left': [2, 3, 4],        'right': [6]},              # A  4
+            70: {'left': [2, 3],           'right': [1, 6]},           # A# 4
+            71: {'left': [2, 3],           'right': [6]},              # B  4
 
-            72: {'left': [3], 'right': [6]},                       # C  5
-            73: {'left': [], 'right': [6]},                        # C# 5
-            74: {'left': [2, 4, 5], 'right': [1, 3, 5]},           # D  5
-            75: {'left': [2, 4, 5], 'right': [1, 3, 5, 6]},        # D# 5
-            76: {'left': [2, 4, 5], 'right': [1, 3, 6]},           # E  5
-            77: {'left': [2, 4, 5], 'right': [1, 6]},              # F  5
-            78: {'left': [2, 4, 5], 'right': [5, 6]},              # F# 5
-            79: {'left': [2, 4, 5], 'right': [6]},                 # G  5
+            72: {'left': [3],              'right': [6]},              # C  5
+            73: {'left': [],               'right': [6]},              # C# 5
+            74: {'left': [2, 4, 5],        'right': [1, 3, 5]},        # D  5
+            75: {'left': [2, 4, 5],        'right': [1, 3, 5, 6]},     # D# 5
+            76: {'left': [2, 4, 5],        'right': [1, 3, 6]},        # E  5
+            77: {'left': [2, 3, 4, 5],     'right': [1, 6]},           # F  5
+            78: {'left': [2, 3, 4, 5],     'right': [5, 6]},           # F# 5
+            79: {'left': [2, 3, 4, 5],     'right': [6]},              # G  5
+            80: {'left': [2, 3, 4, 5, 6],  'right': [6]},              # G# 5
+            81: {'left': [2, 3, 4],        'right': [6]},              # A  5
+            82: {'left': [2, 3],           'right': [1, 6]},           # A# 5
+            83: {'left': [2, 3],           'right': [6]},              # B  5
+
+            84: {'left': [3],              'right': [6]},              # C  6
+            85: {'left': [],               'right': [6]},              # C# 6
         }
 
         self.hands_colors = HANDS_COLORS_3

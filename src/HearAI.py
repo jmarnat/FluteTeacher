@@ -41,17 +41,24 @@ class HearAI:
 
     def record(self, millis=200):
         length_secs = millis / 1000
-        if self._stream.is_stopped():
+
+        try:
+            if self._stream.is_stopped():
+                self._init_stream()
+        except OSError:
             self._init_stream()
 
         self._stream.start_stream()
         self._last_frames = []
         nb_chunks = int(length_secs * (self._rate / self._chunk))
         for i in range(nb_chunks):
-            data = self._stream.read(self._chunk)
+            try:
+                data = self._stream.read(self._chunk)
+            except OSError:
+                print('WARNING: PyAudio input overflowed')
+                return
             self._last_frames.append(data)
         self._stream.stop_stream()
-
         return
 
     def last_rec(self):

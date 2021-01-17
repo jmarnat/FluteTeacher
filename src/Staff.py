@@ -7,6 +7,9 @@ COLOR_HIGH = 'blue'
 COLOR_OK = 'green'
 COLOR_NORMAL = 'black'
 
+# = percentage of the whole height
+INTER_LINE_HEIGHT = 0.06
+
 
 class Staff(QWidget):
     def __init__(self, kind='normal'):
@@ -27,7 +30,7 @@ class Staff(QWidget):
 
     def il(self):
         """inter-line height"""
-        return self.height() / 12
+        return self.height() * INTER_LINE_HEIGHT
 
     def display_note(self, note, ndec=None, update=True):
         self.notes = [note]

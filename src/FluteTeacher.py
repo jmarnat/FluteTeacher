@@ -16,8 +16,8 @@ class FluteTeacher:
     def __init__(self):
         self._current_note = None
         self._heard_note = None
-        self._listening = False
-        self._autonext = False
+        self._listening = True
+        self._autonext = True
         self._start_octave = 4
 
         # MAIN WINDOW
@@ -30,6 +30,10 @@ class FluteTeacher:
 
         # NOTE RECOGNITION
         self._hear_ai = HearAI()
+        if self._autonext:
+            self.set_autonext(True)
+        if self._listening:
+            self.start_listening()
 
     def is_autonext(self):
         return self._autonext
@@ -96,7 +100,9 @@ class FluteTeacher:
         self.next_note()
 
     def set_scale_manager(self, scale_manager):
+        _octave_bkp = self._scale_manager.get_octave()
         self._scale_manager = scale_manager
+        self._scale_manager.set_octave(_octave_bkp)
         self._arpeggiator.set_scale_manager(self._scale_manager)
         self.next_note()
 

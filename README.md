@@ -10,11 +10,7 @@ Here is a screenshot of the actual version:
 - [ ] Add the tuner in GUI
 - [ ] Add the option in the menubar
 ### MenuBar:
-- [x] add Arpeggiators
-- [ ] check current scale / octave / arp
-- [ ] training mode selection -> arp nan ?
 - [ ] Modes
-- [ ] Random note from scale + difficulty
 ### Scales:
 - [ ] add harmonic-minor scales
 - [ ] add melodic-minor scales
@@ -24,16 +20,12 @@ Here is a screenshot of the actual version:
 ### Fingering:
 - [ ] add color for optional fingers 
 - [ ] How to treat multiple fingering possibilities ?? (ex: A#4)
-- [x] add following options :
-  - [x] constant help
-  - [x] fingering (after X secs)
-  - [x] disabled
+
 ### Arpeggiator:
 - [ ] THIRDS_UP_DOWN
 - [ ] Treat random as random choice over current scale
 - [ ] Add note 1 / nnotes for arpeggiator?
 ### General GUI:
-- [x] buttons: set fixed height + change look?
 - [ ] "About" window for copyright + website
 - [ ] add French translation
 - [ ] Display mode:
@@ -61,38 +53,58 @@ Here is a screenshot of the actual version:
 
 ## Version History:
 ### v0.4:
-- Removed Blinking causing bugs
-- Whole-tone scale + mode
-- Splitting ScaleManager and Arpeggiator processes
+- Scales:
+  - Whole-tone scale + mode
+  - Splitting ScaleManager and Arpeggiator processes
+- Staffs:
+  - Removed Blinking causing bugs -> single green note now
 - Arpeggiator:
   - For each: add 1 oct / 2 oct
   - Added "start at octave no 4/5/6" menu 
+- Menubar:
+  - add Arpeggiators
+  - check current scale / octave / arp
+  - training mode selection
+  - Random note from scale (deleting difficulty 'cause choosing scale)
+- Fingerings: 
+  - add following options :
+    - constant help
+    - fingering (after X secs)
+    - disabled
+- General GUI:
+  - buttons: set fixed height + change look?
 
 
 ### v0.3:
-- True scale generator (with intervals)
-- Adding minor scales
-- Mode computing
-- Empty menu bar
-- Scales : Major / Minor
+- Scales:
+  - True scale generator (with intervals)
+  - Adding minor scales
+  - Mode computing
+  - computed: Major / Minor
+- MenuBar:
+  - Empty menu bar
 
 ### v0.2:
-- add "practice mode" selection
-- change "normal mode" to "random notes"
-- add "scale and modes practice" :
+- Internal ("hard coded") options:
+  - add "practice mode" selection
+  - change "normal mode" to "random notes"
+  - add "scale and modes practice" :
 
 ### v0.1:
-- Main window creation with 3 rows
-- `next` (note) button
-- upper-left staff draw
-- upper-left note respondive draw
-- note correspondance between text / drawn / A4-indexed
-- add sharp and flat symbols
-- corresp note number -> correct true note
-- upper right basic draw
-- flute draw
-- note recognition based on FFT &rarr;
-- HearAI: continuous listening
-- on HearAI: no note if SNR < threshold &rarr; set with volume only
-- recognized note display
-- automatic note validation
+- GUI:
+  - Main window creation with 3 rows
+  - `next` (note) button
+  - upper-left staff draw
+  - upper-left note respondive draw
+  - upper right basic draw
+  - fingering draw
+- Notes:
+  - note correspondance between text / drawn / A4-indexed
+  - add sharp and flat symbols
+  - corresp note number -> correct true note
+- HearAI (note recognition module):
+  - note recognition based on FFT &rarr;
+  - HearAI: continuous listening
+  - on HearAI: no note if SNR < threshold &rarr; set with volume only
+  - recognized note display
+  - automatic note validation

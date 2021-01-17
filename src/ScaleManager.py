@@ -161,3 +161,6 @@ class ScaleManager:
     def set_octave(self, octave=4):
         self._base_note = self._base_note.get_8va(octave - self._base_note.octave)
         self._init_scale()
+
+    def get_octave(self):
+        return self._base_note.octave
