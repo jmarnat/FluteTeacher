@@ -5,6 +5,7 @@ from src.Staff import Staff
 from src.Note import Note
 from src.Fingering import Fingering
 from src.ScaleManager import ScaleManager
+from src.Arpeggiator import Arpeggiator
 
 
 class MenuBar(QMenuBar):
@@ -18,40 +19,55 @@ class MenuBar(QMenuBar):
         # self._menu_file = self.addMenu('&File')
         # self._menu_file.addAction(self._exit_action)
 
-        self._menu_training = self.addMenu('Training')
-        self._menu_scales = self._menu_training.addMenu('Scales')
-
+        self._menu_scales = self.addMenu('Scales')
         for scale_name in ScaleManager.VALID_SCALES.keys():
-            local_menu_scale = self._menu_scales.addMenu(scale_name)
-
-            for scale_alt_str in ScaleManager.VALID_SCALES[scale_name].keys():
-                alt_dict = {'': 'Naturals', '#': 'Sharps', 'b': 'Flats'}
-                local_menu_alt = local_menu_scale.addMenu(alt_dict[scale_alt_str])
-
-                for scale_note in ScaleManager.VALID_SCALES[scale_name][scale_alt_str]:
-                    full_scale_str = '{}{} {}'.format(scale_note, scale_alt_str, scale_name)
-                    _qaction = QAction(full_scale_str, local_menu_alt)
+            local_menu_scale = self._menu_scales.addMenu("{} scales".format(scale_name))
+            _alts = list(ScaleManager.VALID_SCALES[scale_name].keys())
+            for _alt_str in _alts:
+                for scale_note in ScaleManager.VALID_SCALES[scale_name][_alt_str]:
+                    full_scale_str = '{}{} {}'.format(scale_note, _alt_str, scale_name)
+                    _qaction = QAction(full_scale_str, local_menu_scale)
                     _qaction.triggered.connect(partial(self.set_training_scale,
                                                        scale_name,
                                                        scale_note,
-                                                       scale_alt_str
+                                                       _alt_str
                                                        ))
-                    local_menu_alt.addAction(_qaction)
+                    local_menu_scale.addAction(_qaction)
+                if _alt_str in _alts[:-1]:
+                    local_menu_scale.addSeparator()
 
-        self._menu_octave = self._menu_training.addMenu('Start from octave..')
-        for octave, octave_name in [(4, '4 (Middle C)'), (5, '5'), (6, '6')]:
+        self._menu_scales.addSeparator()
+        self._menu_octave = self._menu_scales.addMenu('Start from octave..')
+        for octave, octave_name in {4: '4 (Middle C)', 5: '5', 6: '6'}.items():
             _qaction = QAction(octave_name, self._menu_octave)
             _qaction.triggered.connect(partial(self.set_training_octave, octave))
             self._menu_octave.addAction(_qaction)
 
+        self._menu_arps = self.addMenu('Apreggiators')
+        _arp_dict = Arpeggiator.arp_dict()
+        for _arp_kind, _arp_kind_str in _arp_dict.items():
+            for _noct, _noct_str in Arpeggiator.noct_dict().items():
+                _arp_full_str = "{} - {}".format(_arp_kind_str, _noct_str)
+                _qaction = QAction(_arp_full_str, self._menu_arps)
+                _qaction.triggered.connect(partial(self.set_arpeggiator, _arp_kind, _noct))
+                self._menu_arps.addAction(_qaction)
+            if _arp_kind_str in list(_arp_dict.values())[:-1]:
+                self._menu_arps.addSeparator()
+
+    # def closeEvent(self, QCloseEvent):
+    #     print('MainWindow closing, byebye')
+
     def set_training_scale(self, scale_name, base_note_letter, base_note_alt_str):
         base_note_str = "{}{}{}".format(base_note_letter, base_note_alt_str, 4)
-        self._ft.set_scale(scale_name, Note.from_str(base_note_str), mode=1)
+        _new_scale_mgr = ScaleManager(scale_name, Note.from_str(base_note_str), mode=1)
+        self._ft.set_scale_manager(_new_scale_mgr)
+
+    def set_training_octave(self, octave):
+        self._ft.set_start_octave(octave)
 
     # noinspection PyMethodMayBeStatic
-    def set_training_octave(self, octave):
-        print('set training octave to {}'.format(octave))
-        pass
+    def set_arpeggiator(self, kind, n_octaves):
+        self._ft.set_arpeggiator(kind, n_octaves)
 
 
 class MainWindow(QMainWindow):

@@ -39,8 +39,8 @@ class Note:
     def __str__(self):
         return self.letter + str(self.alteration) + str(self.octave)
 
-    def get_8va(self):
-        return Note(self.letter, self.octave + 1, self.alteration)
+    def get_8va(self, noct=1):
+        return Note(self.letter, self.octave + noct, self.alteration)
 
     def add_interval(self, interval):
         """

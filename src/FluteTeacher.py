@@ -5,7 +5,6 @@ from src.Note import Note
 from src.HearAI import HearAI
 from src.ScaleManager import ScaleManager
 from src.Arpeggiator import Arpeggiator
-from src.Alteration import Alterations
 from src.MainWindow import MainWindow
 
 
@@ -15,24 +14,20 @@ BLINKING_LOOPS = 3
 
 
 class FluteTeacher:
-    NOTE_MODE_RANDOM_1 = 1
-    NOTE_MODE_RANDOM_2 = 2
-    NOTE_MODE_SCALE = 0
-
     def __init__(self):
         self._current_note = None
         self._heard_note = None
         self._listening = False
         self._autonext = False
-        self._scale_manager = ScaleManager(scale_name='Major',
-                                           mode=1,
-                                           base_note=Note('C', 4, Alterations.NATURAL),
-                                           arp=Arpeggiator.UP_DOWN)
-
-        self._note_mode = FluteTeacher.NOTE_MODE_SCALE
+        self._start_octave = 4
 
         # MAIN WINDOW
         self._main_window = MainWindow(flute_teacher=self)
+
+        # SCALE MANAGER AND ARPEGGIATOR
+        self._scale_manager = ScaleManager('Major', Note('C', self._start_octave), mode=1)
+        self._arpeggiator = Arpeggiator(self._scale_manager, kind=Arpeggiator.UP, n_octaves=1)
+        self.next_note()
 
         # NOTE RECOGNITION
         self._hear_ai = HearAI()
@@ -81,14 +76,14 @@ class FluteTeacher:
             thr.join()
             print('done.')
 
-        if self._note_mode == FluteTeacher.NOTE_MODE_RANDOM_1:
-            self._current_note = Note.random_note(difficulty=1, last_note=self._current_note)
-        elif self._note_mode == FluteTeacher.NOTE_MODE_RANDOM_2:
-            self._current_note = Note.random_note(difficulty=2, last_note=self._current_note)
-        elif self._note_mode == FluteTeacher.NOTE_MODE_SCALE:
-            self._current_note = self._scale_manager.next_arp_note()
-        else:
-            exit(0)
+        # if self._note_mode == FluteTeacher.NOTE_MODE_RANDOM_1:
+        #     self._current_note = Note.random_note(difficulty=1, last_note=self._current_note)
+        # elif self._note_mode == FluteTeacher.NOTE_MODE_RANDOM_2:
+        #     self._current_note = Note.random_note(difficulty=2, last_note=self._current_note)
+        # elif self._note_mode == FluteTeacher.NOTE_MODE_SCALE:
+        self._current_note = self._arpeggiator.pick_note()
+        # else:
+        #     exit(0)
 
         if self._current_note is None:
             print('ERROR: NEW NOTE IS NONE')
@@ -111,7 +106,20 @@ class FluteTeacher:
         self._main_window.erase_note(staff='right')
         return None
 
-    def set_scale(self, scale_name, base_note, mode):
-        self._scale_manager.set_scale(scale_name, base_note, mode)
-        self._scale_manager.init_arp()
+    def set_start_octave(self, start_octave=4):
+        # self._start_octave = start_octave
+        # self._scale_manager = ScaleManager('Major', Note('C', self._start_octave), mode=1)
+        print('flute teacher, setting start_octave to {}'.format(start_octave))
+        self._scale_manager.set_octave(start_octave)
+        self._arpeggiator.set_scale_manager(self._scale_manager)
+        self.next_note()
+
+    def set_scale_manager(self, scale_manager):
+        # self._scale_manager = ScaleManager(scale_name, base_note, mode)
+        self._scale_manager = scale_manager
+        self._arpeggiator.set_scale_manager(self._scale_manager)
+        self.next_note()
+
+    def set_arpeggiator(self, kind, n_octaves):
+        self._arpeggiator = Arpeggiator(self._scale_manager, kind, n_octaves)
         self.next_note()

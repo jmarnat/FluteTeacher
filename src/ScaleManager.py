@@ -1,12 +1,13 @@
 from src.Intervals import Intervals
 from src.Note import Note
-from src.Arpeggiator import Arpeggiator
 
 
 class ScaleManager:
     VALID_MODES = {
         'Major': (1, 2, 3, 4, 5, 6, 7),
-        'Whole-tone': [1]
+        'Minor': (1, 2, 3, 4, 5, 6, 7),
+        'Whole-tone': [1],
+        'Chromatic': [1]
     }
 
     VALID_SCALES = {
@@ -24,60 +25,61 @@ class ScaleManager:
             '': ('C', 'D', 'E', 'F', 'G', 'A', 'B'),
             '#': ('C', 'D', 'F', 'G', 'A'),
             'b': ('D', 'E', 'G', 'A', 'B')
+        },
+        'Chromatic': {
+            '': ('C', 'D', 'E', 'F', 'G', 'A', 'B'),
+            '#': ('C', 'D', 'F', 'G', 'A'),
+            'b': ('D', 'E', 'G', 'A', 'B')
         }
     }
 
-    def __init__(self, scale_name='Major', base_note=Note(), mode=1, arp=Arpeggiator.UP):
+    def __init__(self, scale_name='Major', base_note=Note(), mode=1):
         """
         :param scale_name: str
         :param base_note: first note of the scale
         :param mode: from 1 to 7
-        :param arp: class ArpeggiatorV2
         """
 
         self._scale = None
-        self._mode = None
-        self._arp_type = None
-        self._arpeggiator = None
-
-        self.set_scale(scale_name, base_note, mode)
-        self.set_arp(arp)
-
-    def set_scale(self, scale_name, base_note, mode=1):
-        if not ScaleManager._is_valid_scale(scale_name, base_note, mode):
-            print('ERROR: not valid scale "{} {} - mode {}"'.format(str(base_note), scale_name, mode))
-            exit(0)
-
-        print('ScaleManager: setting scale {} {} - mode {}'.format(str(base_note), scale_name, mode))
-
+        self._scale_name = scale_name
         self._mode = mode
-        if scale_name == 'Major':
-            self._scale = ScaleManager._compute_major_scale(base_note, mode)
-        elif scale_name == 'Minor':
-            self._scale = ScaleManager._compute_minor_scale(base_note, mode)
-        elif scale_name == 'Whole-tone':
-            self._scale = ScaleManager._compute_wholetone_scale(base_note)
-        else:
-            print('ERROR: unknown scale "{}"'.format(scale_name))
+        self._base_note = base_note
+        self._init_scale()
+
+    def _init_scale(self):
+        if not self._is_valid_scale():
+            print('ERROR: not valid scale "{} {} - mode {}"'.format(str(self._base_note), self._scale_name, self._mode))
             exit(0)
 
-    @staticmethod
-    def _is_valid_scale(scale_name, base_note, mode):
-        _letter = base_note.letter
-        _alt = str(base_note.alteration)
+        print('ScaleManager: setting scale {} {} - mode {}'.format(str(self._base_note), self._scale_name, self._mode))
 
-        if scale_name not in ScaleManager.VALID_SCALES.keys():
+        if self._scale_name == 'Major':
+            self._init_major_scale()
+        elif self._scale_name == 'Minor':
+            self._init_minor_scale()
+        elif self._scale_name == 'Whole-tone':
+            self._init_wholetone_scale()
+        elif self._scale_name == 'Chromatic':
+            self._init_chromatic_scale()
+        else:
+            print('ERROR: unknown scale "{}"'.format(self._scale_name))
+            exit(0)
+
+    def _is_valid_scale(self):
+        _letter = self._base_note.letter
+        _alt = str(self._base_note.alteration)
+
+        if self._scale_name not in ScaleManager.VALID_SCALES.keys():
             return False
-        if _alt not in ScaleManager.VALID_SCALES[scale_name]:
+        if _alt not in ScaleManager.VALID_SCALES[self._scale_name]:
             return False
-        if _letter not in ScaleManager.VALID_SCALES[scale_name][_alt]:
+        if _letter not in ScaleManager.VALID_SCALES[self._scale_name][_alt]:
             return False
-        if mode not in ScaleManager.VALID_MODES[scale_name]:
+        if self._mode not in ScaleManager.VALID_MODES[self._scale_name]:
             return False
         return True
 
-    @staticmethod
-    def _compute_major_scale(base_note, mode=1):
+    def _init_major_scale(self):
         scale_intervals = [
             Intervals.SECOND_MAJOR,
             Intervals.SECOND_MAJOR,
@@ -87,7 +89,7 @@ class ScaleManager:
             Intervals.SECOND_MAJOR,
             Intervals.SECOND_MINOR
         ]
-        current_note = base_note
+        current_note = self._base_note
         _sc = [current_note]
 
         for next_scale_note, interval in zip(scale_intervals[1:], scale_intervals[:-1]):
@@ -95,11 +97,10 @@ class ScaleManager:
             _sc.append(next_note)
             current_note = next_note
 
-        _sc_mode = _sc[(mode - 1):] + _sc[:(mode - 1)]
-        return _sc_mode
+        _sc_mode = _sc[(self._mode - 1):] + _sc[:(self._mode - 1)]
+        self._scale = _sc_mode
 
-    @staticmethod
-    def _compute_minor_scale(base_note, mode=1):
+    def _init_minor_scale(self):
         scale_intervals = [
             Intervals.SECOND_MAJOR,
             Intervals.SECOND_MINOR,
@@ -109,7 +110,7 @@ class ScaleManager:
             Intervals.SECOND_MAJOR,
             Intervals.SECOND_MAJOR
         ]
-        current_note = base_note
+        current_note = self._base_note
         _sc = [current_note]
 
         for next_scale_note, interval in zip(scale_intervals[1:], scale_intervals[:-1]):
@@ -117,37 +118,46 @@ class ScaleManager:
             _sc.append(next_note)
             current_note = next_note
 
-        _sc_mode = _sc[(mode - 1):] + _sc[:(mode - 1)]
-        return _sc_mode
+        _sc_mode = _sc[(self._mode - 1):] + _sc[:(self._mode - 1)]
+        self._scale = _sc_mode
 
-    @staticmethod
-    def _compute_wholetone_scale(base_note):
+    def _init_wholetone_scale(self):
         _scale1 = ['C', 'D', 'E', 'F#', 'G#', 'A#']
         _scale2 = ['C', 'D', 'E', 'Gb', 'Ab', 'Bb']
         _scale3 = ['C#', 'D#', 'F', 'G', 'A', 'B']
         _scale4 = ['Db', 'Eb', 'F', 'G', 'A', 'B']
 
-        _oct = base_note.octave
+        _oct = self._base_note.octave
         for _scale_str_list in [_scale1, _scale2, _scale3, _scale4]:
-            _note_str = "{}{}".format(base_note.letter, base_note.alteration)
+            _note_str = "{}{}".format(self._base_note.letter, self._base_note.alteration)
             if _note_str in _scale_str_list:
                 _note_idx = _scale_str_list.index(_note_str)
                 _scale_part1 = [Note.from_str("{}{}".format(n, _oct)) for n in _scale_str_list[_note_idx:]]
                 _scale_part2 = [Note.from_str("{}{}".format(n, _oct)).get_8va() for n in _scale_str_list[:_note_idx]]
                 print('full wholetone mode computed ok')
-                return _scale_part1 + _scale_part2
+                self._scale = _scale_part1 + _scale_part2
+                break
 
-        return None
+    def _init_chromatic_scale(self):
+        _scale_sharps = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+        _scale_flats = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
+        _oct = self._base_note.octave
+        for _scale_str_list in [_scale_sharps, _scale_flats]:
+            _note_str = "{}{}".format(self._base_note.letter, self._base_note.alteration)
+            if _note_str in _scale_str_list:
+                _note_idx = _scale_str_list.index(_note_str)
+                _scale_part1 = [Note.from_str("{}{}".format(n, _oct)) for n in _scale_str_list[_note_idx:]]
+                _scale_part2 = [Note.from_str("{}{}".format(n, _oct)).get_8va() for n in _scale_str_list[:_note_idx]]
+                print('full wholetone mode computed ok')
+                self._scale = _scale_part1 + _scale_part2
+                break
 
-    def set_arp(self, arp_type):
-        self._arp_type = arp_type
-        self.init_arp()
+    def get_scale(self, add_octave=0):
+        _sc = self._scale
+        for i in range(add_octave):
+            _sc = [note.get_8va() for note in _sc]
+        return _sc
 
-    def init_arp(self):
-        self._arpeggiator = Arpeggiator(self._scale, self._arp_type)
-
-    def next_arp_note(self):
-        return self._arpeggiator.pick_note()
-
-    def is_arp_done(self):
-        return self._arpeggiator.is_done()
+    def set_octave(self, octave=4):
+        self._base_note = self._base_note.get_8va(octave - self._base_note.octave)
+        self._init_scale()

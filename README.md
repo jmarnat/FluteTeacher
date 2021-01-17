@@ -6,16 +6,32 @@ Here is a screenshot of the actual version:
 
 ## To-do list:
 ### Sure:
+- [ ] MenuBar:
+  - [x] add Arpeggiators
+  - [ ] check current scale / octave / arp
 - [ ] training mode selection:
   - [ ] Modes
   - [ ] Random + difficulty
-- [ ] Arp THIRDS_UP_DOWN
+- [ ] Arpeggiator:
+  - [ ] THIRDS_UP_DOWN
+  - [ ] Treat random as random choice over current scale
+- [ ] Add note 1 / nnotes for arpeggiator?
 - [ ] "About" window for copyright + website
-- [ ] add "start at octave" menu 
+- [ ] add "start at octave no 1/2" menu 
 - [ ] add French translation
-- [ ] finish notes
+- [ ] finish notes -> ??
 - [ ] add harmonic-minor scales
 - [ ] add melodic-minor scales 
+- [ ] Display mode:
+  - [ ] single note
+  - [ ] sheet music
+- [ ] HearAI: continuous listening but take the last 200ms? in order to update more quickly and accurately
+- [ ] Add Listening option :
+  - [ ] play midi sound if available ? -> or pre-recorded sound ?
+  - [ ] either single note
+  - [ ] or the full scale
+- [ ] Add proper close function
+- [ ] Add 'bécarre'
 
 ### For compilation:
 - [ ] check requirements
@@ -33,6 +49,10 @@ Here is a screenshot of the actual version:
 ## Version History:
 ### v0.4:
 - Whole-tone scale + mode
+- Splitting ScaleManager and Arpeggiator processes
+- Arpeggiator:
+  - For each: add 1 oct / 2 oct
+
 
 ### v0.3:
 - True scale generator (with intervals)
