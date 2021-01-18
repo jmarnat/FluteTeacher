@@ -5,28 +5,19 @@ Here is a screenshot of the actual version:
 ![Screen1](doc_res/screen2.png)
 
 ## To-do list (by decreasing priority):
-### Fingering:
-- [ ] Treating multiple fingering possibilities:
-  - Make a `Fingerings` class:
-    - put the fingerings into
-    - call fingering as many times as there are possibilities
-    - (for later maybe) Let the choice between multi or smart?
-  - Call Fingerings instead of Fingering
-- [ ] add color for optional fingers
+### Arpeggiator:
+- [ ] THIRDS_UP_DOWN
+- [ ] Add note 1 / notes for arpeggiator? --> ???
 ### Staffs:
-- [x] test white background color
 - [ ] add view choices : single / continuous
 - [ ] add corresponding GUI option
 ### Help popup:
 - [ ] Make a Help popup window explaining How To
-- [ ] Add correspondign MenuBar item
+- [ ] Add corresponding MenuBar item
 ### Tuner:
 - [ ] Add a tuner in HearAI
 - [ ] Add the tuner in GUI
 - [ ] Add the option in the menubar
-### Arpeggiator:
-- [ ] THIRDS_UP_DOWN
-- [ ] Add note 1 / nnotes for arpeggiator? --> ???
 ### General GUI:
 - [ ] "About" window for copyright + website
 - [ ] add French translation
@@ -52,6 +43,16 @@ Here is a screenshot of the actual version:
 - [ ] for multiple notes: better auto placement (100px + proportion?)
 
 ## Version History:
+
+### next
+- Fingering:
+  - Treating multiple fingering possibilities
+  - add color for optional fingers
+  - show 2 fingerings delays when appropriate
+- Staffs:
+  - Added white background + rounded corners
+
+
 ### v0.5
 - Starting note and octave:
   - Changed to `Start from note` -> `Octave` -> `Note`

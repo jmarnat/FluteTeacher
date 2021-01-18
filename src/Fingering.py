@@ -78,9 +78,9 @@ class Fingering(QWidget):
         self._update_fingering()
 
     def _fingering_delay(self):
-        self.fingerings = [(tuple([-1] * 6), tuple([-1] * 8))]
-        self.update()
         self._next_fingerings = self._compute_fingering()
+        self.fingerings = [(tuple([-1] * 6), tuple([-1] * 8))] * len(self._next_fingerings)
+        self.update()
         self._nb_waiting += 1
         sleep_time = 0.01
         while self._tictoc > 0:
@@ -164,8 +164,8 @@ class Fingering(QWidget):
                     self._draw_fingering(qp, n_fingering, nb_fingerings)
                     if n_fingering < (nb_fingerings - 1):
                         self._draw_separator(qp, n_fingering, nb_fingerings)
-            else:
-                self._draw_fingering(qp)
+            # else:
+            #     self._draw_fingering(qp)
 
         qp.end()
 
