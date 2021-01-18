@@ -5,7 +5,6 @@ Here is a screenshot of the actual version:
 ![Screen1](doc_res/screen2.png)
 
 ## To-do list (by decreasing priority):
-- [x] NO FINGERING : SHOW CROSSES
 ### Timer:
 - [ ] Add a practicing timer?? 
 
@@ -51,11 +50,12 @@ Here is a screenshot of the actual version:
 
 ## Version History:
 
-### next
+### v0.6
 - Fingering:
   - Treating multiple fingering possibilities
   - add color for optional fingers
   - show 2 fingerings delays when appropriate
+  - when no fingering: show grayed
 - Staffs:
   - Added white background + rounded corners
 - Arpeggiator:
