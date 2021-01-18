@@ -66,7 +66,7 @@ class Fingering(QWidget):
         self._nb_waiting = 0
 
         self.setMinimumWidth(200)
-        self.setMinimumHeight(100)
+        self.setMinimumHeight(200)
 
     def set_display_mode(self, display_mode, display_delay=None):
         self._display_mode = display_mode
@@ -182,14 +182,46 @@ class Fingering(QWidget):
         qp.setBrush(QColor('#e0e0e0'))
 
         w = self.width()
+        flute_h = self.height() / 2
         h = self.height() // total
         cy = int((n_fingering * h) + (h / 2))
+        # r = 0.02 * w
+        r = min(flute_h/10, w/30)
 
-        # r = 0.025 * w / total
-        r = 0.015 * w
+        # TESTING FLUTE GRADIENT..
+        _flute_top = cy - 4 * r
+        _flute_width = 8 * r
+        _flute_bottom = _flute_top + _flute_width
 
-        print('_draw_fingering(n_fingering={}, total={})'.format(n_fingering, total))
-        print('cy = {}'.format(cy))
+        path = QPainterPath()
+        gradient = QLinearGradient(0, _flute_top, 0, _flute_bottom)
+        gradient.setColorAt(0, QColor('#e0e0e0'))
+        gradient.setColorAt(1, QColor('#c0c0c0'))
+        path.addRoundedRect(20, _flute_top, w-40, _flute_width, 10, 10)
+        qp.fillPath(path, gradient)
+
+        path = QPainterPath()
+        gradient = QLinearGradient(0.45*w, _flute_top, 0.45*w+5, _flute_top)
+        gradient.setColorAt(1, QColor('#e0e0e0'))
+        gradient.setColorAt(0, QColor('#c0c0c0'))
+        path.addRect(0.45*w, _flute_top, 5, _flute_width)
+        qp.fillPath(path, gradient)
+
+        path = QPainterPath()
+        gradient = QLinearGradient(0.45 * w, _flute_top, 0.45 * w - 5, _flute_top)
+        gradient.setColorAt(1, QColor('#e0e0e0'))
+        gradient.setColorAt(0, QColor('#c0c0c0'))
+        path.addRect(0.45 * w, _flute_top, -5, _flute_width)
+        qp.fillPath(path, gradient)
+
+        # qp.drawLine(
+        #     int(0.45 * w),
+        #     int(_flute_top),
+        #     int(0.45 * w),
+        #     int(_flute_bottom),
+        # )
+
+
 
         qp.setPen(QColor(Qt.black))
 
@@ -224,13 +256,6 @@ class Fingering(QWidget):
             int(cy - 3 * r),
             int(2 * r),
             int(r)
-        )
-
-        qp.drawLine(
-            int(0.45 * w),
-            int(cy - 0.25 * h),
-            int(0.45 * w),
-            int(cy + 0.25 * h),
         )
 
         qp.setBrush(self._get_color('right', 1, n_fingering))
@@ -277,7 +302,7 @@ class Fingering(QWidget):
         qp.setBrush(self._get_color('right', 8, n_fingering))
         qp.drawRect(
             int(0.85 * w + r),
-            cy,
+            int(cy),
             int(2 * r),
             int(r)
         )

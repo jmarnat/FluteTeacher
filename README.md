@@ -5,6 +5,7 @@ Here is a screenshot of the actual version:
 ![Screen1](doc_res/screen2.png)
 
 ## To-do list (by decreasing priority):
+- [ ] NO FINGERING : SHOW CROSSES
 ### Arpeggiator:
 - [ ] THIRDS_UP_DOWN
 - [ ] Add note 1 / notes for arpeggiator? --> ???
