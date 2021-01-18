@@ -57,17 +57,20 @@ class Staff(QWidget):
         pass
 
     def _paint_staff(self, qp):
-        qp.setPen(QColor(Qt.black))
+        qp.setPen(QColor('gray'))
+        qp.setBrush(QColor('white'))
+        qp.drawRoundedRect(0, 0, self.width(), self.height(), 5, 5)
 
         # STAFF LINES
+        qp.setPen(QColor(Qt.black))
         for i in [-2, -1, 0, 1, 2]:
             ypos = int(self.mid_height() - (i * self.il()))
-            qp.drawLine(0, ypos, self.width(), ypos)
+            qp.drawLine(10, ypos, self.width()-10, ypos)
 
         # CLEF
         clef_h = int(self.il() * 8)
         clef_w = int(clef_h * (self.qimages['g-clef'].width() / self.qimages['g-clef'].height()))
-        clef_xpos = 0
+        clef_xpos = 10
         clef_ypos = int(self.mid_height() - (clef_h / 2))
         qp.drawImage(QRect(clef_xpos, clef_ypos, clef_w, clef_h), self.qimages['g-clef'])
 

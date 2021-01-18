@@ -217,7 +217,7 @@ class MainWindow(QMainWindow):
         # main grid
         self._top_row.setMinimumHeight(200)
         self.fingering.setMinimumHeight(200)
-        self._bottom_row.setFixedHeight(60)
+        self._bottom_row.setFixedHeight(80)
 
         self._ww_layout.addWidget(self._top_row)
         self._ww_layout.addWidget(self.fingering)

@@ -130,6 +130,11 @@ class Fingering(QWidget):
     def draw_fingering(self):
         qp = QPainter()
         qp.begin(self)
+
+        qp.setPen(QColor('gray'))
+        qp.setBrush(QColor('#e0e0e0'))
+        qp.drawRoundedRect(0, 0, self.width(), self.height(), 5, 5)
+
         w = self.width()
         h = self.height()
         r = w / 40

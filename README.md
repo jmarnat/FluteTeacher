@@ -4,21 +4,29 @@ Since I'm cheap and nerdy, I've made myself an Artificial Flute Teacher!
 Here is a screenshot of the actual version:
 ![Screen1](doc_res/screen2.png)
 
-## To-do list:
+## To-do list (by decreasing priority):
+### Fingering:
+- [ ] Treating multiple fingering possibilities:
+  - Make a `Fingerings` class:
+    - put the fingerings into
+    - call fingering as many times as there are possibilities
+    - (for later maybe) Let the choice between multi or smart?
+  - Call Fingerings instead of Fingering
+- [ ] add color for optional fingers
+### Staffs:
+- [x] test white background color
+- [ ] add view choices : single / continuous
+- [ ] add corresponding GUI option
+### Help popup:
+- [ ] Make a Help popup window explaining How To
+- [ ] Add correspondign MenuBar item
 ### Tuner:
 - [ ] Add a tuner in HearAI
 - [ ] Add the tuner in GUI
 - [ ] Add the option in the menubar
-### Staffs:
-- [ ] add view choices : single / continuous
-- [ ] add corresponding GUI option
-### Fingering:
-- [ ] add color for optional fingers 
-- [ ] How to treat multiple fingering possibilities ?? (ex: A#4)
 ### Arpeggiator:
 - [ ] THIRDS_UP_DOWN
-- [ ] Treat random as random choice over current scale
-- [ ] Add note 1 / nnotes for arpeggiator?
+- [ ] Add note 1 / nnotes for arpeggiator? --> ???
 ### General GUI:
 - [ ] "About" window for copyright + website
 - [ ] add French translation
@@ -46,14 +54,15 @@ Here is a screenshot of the actual version:
 ## Version History:
 ### v0.5
 - Starting note and octave:
-- Change to `Start from note` -> `Octave` -> `Note`
-- Scale and Modes
-  - Make modes only from Major, Minor harmonic and Minor melodic scales
+  - Changed to `Start from note` -> `Octave` -> `Note`
+- Scale and Modes:
+  - Modes available only from Major, Minor harmonic and Minor melodic scales
   - MenuBar integration -> look alright 
-- Scales:
-  - add harmonic-minor scales
-  - add melodic-minor scales
-  - add pentatonics
+  - added harmonic-minor scales
+  - added melodic-minor scales
+  - added pentatonics
+- Arpeggiator:
+  - Treating random as random choice over current scale
 
 ### v0.4:
 - Scales:
