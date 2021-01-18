@@ -5,13 +5,14 @@ Here is a screenshot of the actual version:
 ![Screen1](doc_res/screen2.png)
 
 ## To-do list (by decreasing priority):
-- [ ] NO FINGERING : SHOW CROSSES
-### Arpeggiator:
-- [ ] THIRDS_UP_DOWN
-- [ ] Add note 1 / notes for arpeggiator? --> ???
+- [x] NO FINGERING : SHOW CROSSES
+### Timer:
+- [ ] Add a practicing timer?? 
+
 ### Staffs:
+- [ ] make note gray if not playable = no fingering
 - [ ] add view choices : single / continuous
-- [ ] add corresponding GUI option
+  - [ ] add corresponding GUI option
 ### Help popup:
 - [ ] Make a Help popup window explaining How To
 - [ ] Add corresponding MenuBar item
@@ -19,18 +20,24 @@ Here is a screenshot of the actual version:
 - [ ] Add a tuner in HearAI
 - [ ] Add the tuner in GUI
 - [ ] Add the option in the menubar
+- [ ] add tuning setting
+- [ ] set tuning in menubar
+  - Standard: 440 Hz
+  - Baroque: 415 Hz
+  - Berlin Philharmonic: 442 Hz
+  - (ref: https://en.wikipedia.org/wiki/Concert_pitch)
 ### General GUI:
 - [ ] "About" window for copyright + website
 - [ ] add French translation
 - [ ] Display mode:
   - [ ] single note
   - [ ] sheet music
-- [ ] HearAI: continuous listening but take the last 200ms? in order to update more quickly and accurately
+- ( ) HearAI: continuous listening but take the last 200ms? in order to update more quickly and accurately
 - [ ] Add Listening option :
   - [ ] play midi sound if available ? -> or pre-recorded sound ?
   - [ ] either single note
   - [ ] or the full scale
-- [ ] Add proper close function
+- [ ] Add proper quit function
 - [ ] Add 'bécarre'
 ### For compilation:
 - [ ] check requirements
@@ -39,7 +46,6 @@ Here is a screenshot of the actual version:
 ### Maybe:
 - [ ] adding register information + draw ?
 - [ ] encapsulate in a specific window
-- [ ] add tuning setting
 - [ ] better drawings?
 - [ ] for multiple notes: better auto placement (100px + proportion?)
 
@@ -52,7 +58,8 @@ Here is a screenshot of the actual version:
   - show 2 fingerings delays when appropriate
 - Staffs:
   - Added white background + rounded corners
-
+- Arpeggiator:
+  -  Thirds Up/Down
 
 ### v0.5
 - Starting note and octave:

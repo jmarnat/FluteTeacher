@@ -14,11 +14,11 @@ FINGERINGS = {
     61: [((0, 1, 1, 1, 1, 0), (1, 0, 1, 0, 1, 0, 1, 0))],  # C# 4
     62: [((0, 1, 1, 1, 1, 0), (1, 0, 1, 0, 1, 0, 0, 0))],  # D  4
     63: [((0, 1, 1, 1, 1, 0), (1, 0, 1, 0, 1, 1, 0, 0))],  # D# 4
-    64: [((0, 1, 1, 1, 1, 0), (1, 0, 1, 0, 0, 2, 0, 0))],  # E  4
-    65: [((0, 1, 1, 1, 1, 0), (1, 0, 0, 0, 0, 2, 0, 0))],  # F  4
+    64: [((0, 1, 1, 1, 1, 0), (1, 0, 1, 0, 0, 1, 0, 0))],  # E  4
+    65: [((0, 1, 1, 1, 1, 0), (1, 0, 0, 0, 0, 1, 0, 0))],  # F  4
     66: [((0, 1, 1, 1, 1, 0), (0, 0, 0, 0, 1, 1, 0, 0)),
          ((0, 1, 1, 1, 1, 0), (0, 0, 1, 0, 0, 1, 0, 0))],  # F# 4
-    67: [((0, 1, 1, 1, 1, 0), (0, 0, 0, 0, 0, 2, 0, 0))],  # G  4
+    67: [((0, 1, 1, 1, 1, 0), (0, 0, 0, 0, 0, 1, 0, 0))],  # G  4
     68: [((0, 1, 1, 1, 1, 1), (0, 0, 0, 0, 0, 1, 0, 0))],  # G# 4
     69: [((0, 1, 1, 1, 0, 0), (0, 0, 0, 0, 0, 2, 0, 0))],  # A  4
     70: [((0, 1, 1, 0, 0, 0), (1, 0, 0, 0, 0, 1, 0, 0)),
@@ -51,7 +51,7 @@ class Fingering(QWidget):
     DISPLAY_NEVER = 3
 
     def __init__(self, display_mode=DISPLAY_ALWAYS, display_delay=3):
-        super(Fingering, self).__init__()
+        super(Fingering, self).__init__(flags=Qt.Widget)
 
         self.fingerings = []
 
@@ -105,7 +105,7 @@ class Fingering(QWidget):
                 print('ERROR: UNKNOWN TYPE(FOUND_FINGERS) = {}'.format(type(found_fingers)))
         except KeyError:
             print('warning, no fingering for note no {}'.format(self._current_note.midi_code))
-            return []
+            return [(None, None, None, None, None, None), (None, None, None, None, None, None, None, None)]
 
     def _update_fingering(self):
         self.set_fingering(self._current_note)
@@ -130,10 +130,11 @@ class Fingering(QWidget):
 
     def _get_color(self, hand, key_index, n_fingering):
         side = {'left': 0, 'right': 1}[hand]
-        try:
-            val = self.fingerings[n_fingering][side][key_index - 1]
-        except IndexError:
+
+        if not any(self.fingerings[0]):
             return Qt.Dense5Pattern
+
+        val = self.fingerings[n_fingering][side][key_index - 1]
 
         if val == -1:
             return Qt.Dense7Pattern
@@ -161,11 +162,15 @@ class Fingering(QWidget):
             nb_fingerings = len(self.fingerings)
             if nb_fingerings > 0:
                 for n_fingering in range(nb_fingerings):
+                    self._draw_flute(qp, n_fingering, nb_fingerings)
                     self._draw_fingering(qp, n_fingering, nb_fingerings)
                     if n_fingering < (nb_fingerings - 1):
                         self._draw_separator(qp, n_fingering, nb_fingerings)
-            # else:
-            #     self._draw_fingering(qp)
+            else:
+                print('drawing empty flute')
+                self._draw_flute(qp, 0, 1)
+        else:
+            print('fingerings is None')
 
         qp.end()
 
@@ -177,16 +182,15 @@ class Fingering(QWidget):
         qp.setPen(dash_pen)
         qp.drawLine(10, y, w-10, y)
 
-    def _draw_fingering(self, qp, n_fingering=0, total=1):
-        qp.setPen(QColor('gray'))
-        qp.setBrush(QColor('#e0e0e0'))
-
+    def _draw_flute(self, qp, n_fingering=0, total=1):
         w = self.width()
-        flute_h = self.height() / 2
         h = self.height() // total
+        flute_h = self.height() / 2
         cy = int((n_fingering * h) + (h / 2))
-        # r = 0.02 * w
         r = min(flute_h/10, w/30)
+        _flute_top = cy - 4 * r
+        _flute_width = 8 * r
+        _flute_bottom = _flute_top + _flute_width
 
         # TESTING FLUTE GRADIENT..
         _flute_top = cy - 4 * r
@@ -214,14 +218,15 @@ class Fingering(QWidget):
         path.addRect(0.45 * w, _flute_top, -5, _flute_width)
         qp.fillPath(path, gradient)
 
-        # qp.drawLine(
-        #     int(0.45 * w),
-        #     int(_flute_top),
-        #     int(0.45 * w),
-        #     int(_flute_bottom),
-        # )
+    def _draw_fingering(self, qp, n_fingering=0, total=1):
+        qp.setPen(QColor('gray'))
+        qp.setBrush(QColor('#e0e0e0'))
 
-
+        w = self.width()
+        h = self.height() // total
+        flute_h = self.height() / 2
+        cy = int((n_fingering * h) + (h / 2))
+        r = min(flute_h/10, w/30)
 
         qp.setPen(QColor(Qt.black))
 

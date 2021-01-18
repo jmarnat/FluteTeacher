@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import *
 from functools import partial
-# from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt
 
 from src.Staff import Staff
 from src.ScaleManager import ScaleManager
@@ -154,10 +154,8 @@ class MenuBar(QMenuBar):
 
 class MainWindow(QMainWindow):
     def __init__(self, flute_teacher, width=800, height=600):
-        super(MainWindow, self).__init__()
+        super(MainWindow, self).__init__(flags=Qt.Window)
         self._ft = flute_teacher
-        # self._autonext = False
-        # self._listening = False
 
         # ------------------------- MAIN WINDOW (self) ----------------------- #
 
@@ -165,14 +163,13 @@ class MainWindow(QMainWindow):
         top_x = (screen_size.width() // 2) - (width // 2)
         top_y = (screen_size.height() // 2) - (height // 2)
         self.setGeometry(top_x, top_y, width, height)
-        # self._window.setGeometry(10, 10, width, height)
         self.setWindowTitle("FluteTeacher")
 
         # ------------------------------ MENU BAR ---------------------------- #
         self._menubar = MenuBar(self, flute_teacher)
 
         # --------------------------- CENTER WIDGET -------------------------- #
-        self._ww = QWidget()
+        self._ww = QWidget(flags=Qt.Widget)
         self._ww_layout = QGridLayout()
         self._ww.setLayout(self._ww_layout)
         self._ww.setMinimumWidth(500)
@@ -214,7 +211,6 @@ class MainWindow(QMainWindow):
 
         # main grid
         self._top_row.setMinimumHeight(200)
-        # self.fingering.setMinimumHeight(200)
         self._bottom_row.setFixedHeight(80)
 
         self._ww_layout.addWidget(self._top_row)
@@ -225,9 +221,9 @@ class MainWindow(QMainWindow):
 
         self.show()
 
-    # def quit(self):
-    #     print('bye bye')
-    #     exit(0)
+    def quit(self):
+        print('bye bye')
+        exit(0)
 
     def toggle_autonext(self):
         if self._ft.is_autonext():
