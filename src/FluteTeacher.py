@@ -78,7 +78,7 @@ class FluteTeacher:
             exit(0)
 
         self._main_window.display_note(staff='left', note=self._current_note)
-        self._main_window.set_fingering(self._current_note)
+        self._main_window.fingering.set_fingering(self._current_note)
 
     def hear_sample(self):
         self._hear_ai.record(millis=200)

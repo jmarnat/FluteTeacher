@@ -4,11 +4,45 @@ from PyQt5.QtWidgets import *
 
 import threading
 import time
-from numpy import arange
 
 HANDS_COLORS_1 = {'left': 'blue', 'right': 'red'}
 HANDS_COLORS_2 = {'left': 'blue', 'right': 'blue'}
 HANDS_COLORS_3 = {'left': 'black', 'right': 'black'}
+
+FINGERINGS = {
+    60: [((0, 1, 1, 1, 1, 0), (1, 0, 1, 0, 1, 0, 1, 2))],  # C  4
+    61: [((0, 1, 1, 1, 1, 0), (1, 0, 1, 0, 1, 0, 1, 0))],  # C# 4
+    62: [((0, 1, 1, 1, 1, 0), (1, 0, 1, 0, 1, 0, 0, 0))],  # D  4
+    63: [((0, 1, 1, 1, 1, 0), (1, 0, 1, 0, 1, 1, 0, 0))],  # D# 4
+    64: [((0, 1, 1, 1, 1, 0), (1, 0, 1, 0, 0, 2, 0, 0))],  # E  4
+    65: [((0, 1, 1, 1, 1, 0), (1, 0, 0, 0, 0, 2, 0, 0))],  # F  4
+    66: [((0, 1, 1, 1, 1, 0), (0, 0, 0, 0, 1, 1, 0, 0)),
+         ((0, 1, 1, 1, 1, 0), (0, 0, 1, 0, 0, 1, 0, 0))],  # F# 4
+    67: [((0, 1, 1, 1, 1, 0), (0, 0, 0, 0, 0, 2, 0, 0))],  # G  4
+    68: [((0, 1, 1, 1, 1, 1), (0, 0, 0, 0, 0, 1, 0, 0))],  # G# 4
+    69: [((0, 1, 1, 1, 0, 0), (0, 0, 0, 0, 0, 2, 0, 0))],  # A  4
+    70: [((0, 1, 1, 0, 0, 0), (1, 0, 0, 0, 0, 1, 0, 0)),
+         ((1, 0, 1, 0, 0, 0), (0, 0, 0, 0, 0, 1, 0, 0))],  # A# 4
+    71: [((0, 1, 1, 0, 0, 0), (0, 0, 0, 0, 0, 1, 0, 0))],  # B  4
+
+    72: [((0, 0, 1, 0, 0, 0), (0, 0, 0, 0, 0, 1, 0, 0))],  # C  5
+    73: [((0, 0, 0, 0, 0, 0), (0, 0, 0, 0, 0, 1, 0, 0))],  # C# 5
+    74: [((0, 1, 0, 1, 1, 0), (1, 0, 1, 0, 1, 0, 0, 0))],  # D  5
+    75: [((0, 1, 0, 1, 1, 0), (1, 0, 1, 0, 1, 1, 0, 0))],  # D# 5
+    76: [((0, 1, 1, 1, 1, 0), (1, 0, 1, 0, 0, 1, 0, 0))],  # E  5
+    77: [((0, 1, 1, 1, 1, 0), (1, 0, 0, 0, 0, 1, 0, 0))],  # F  5
+    78: [((0, 1, 1, 1, 1, 0), (0, 0, 0, 0, 1, 1, 0, 0)),
+         ((0, 1, 1, 1, 1, 0), (0, 0, 1, 0, 0, 1, 0, 0))],  # F# 5
+    79: [((0, 1, 1, 1, 1, 0), (0, 0, 0, 0, 0, 1, 0, 0))],  # G  5
+    80: [((0, 1, 1, 1, 1, 1), (0, 0, 0, 0, 0, 1, 0, 0))],  # G# 5
+    81: [((0, 1, 1, 1, 0, 0), (0, 0, 0, 0, 0, 1, 0, 0))],  # A  5
+    82: [((0, 1, 1, 0, 0, 0), (1, 0, 0, 0, 0, 1, 0, 0)),
+         ((1, 0, 1, 0, 0, 0), (0, 0, 0, 0, 0, 1, 0, 0))],  # A# 5
+    83: [((0, 1, 1, 0, 0, 0), (0, 0, 0, 0, 0, 1, 0, 0))],  # B  5
+
+    84: [((0, 0, 1, 0, 0, 0), (0, 0, 0, 0, 0, 1, 0, 0))],  # C  6
+    85: [((0, 0, 0, 0, 0, 0), (0, 0, 0, 0, 0, 1, 0, 0))],  # C# 6
+}
 
 
 class Fingering(QWidget):
@@ -19,38 +53,7 @@ class Fingering(QWidget):
     def __init__(self, display_mode=DISPLAY_ALWAYS, display_delay=3):
         super(Fingering, self).__init__()
 
-        self.keys = []
-
-        self.midi_fingerings = {
-            60: {'left': [2, 3, 4, 5],     'right': [1, 3, 5, 7, 8]},  # C  4
-            61: {'left': [2, 3, 4, 5],     'right': [1, 3, 5, 7]},     # C# 4
-            62: {'left': [2, 3, 4, 5],     'right': [1, 3, 5]},        # D  4
-            63: {'left': [2, 3, 4, 5],     'right': [1, 3, 5, 6]},     # D# 4
-            64: {'left': [2, 3, 4, 5],     'right': [1, 3, 6]},        # E  4
-            65: {'left': [2, 3, 4, 5],     'right': [1, 6]},           # F  4
-            66: {'left': [2, 3, 4, 5],     'right': [5, 6]},           # F# 4
-            67: {'left': [2, 3, 4, 5],     'right': [6]},              # G  4
-            68: {'left': [2, 3, 4, 5, 6],  'right': [6]},              # G# 4
-            69: {'left': [2, 3, 4],        'right': [6]},              # A  4
-            70: {'left': [2, 3],           'right': [1, 6]},           # A# 4
-            71: {'left': [2, 3],           'right': [6]},              # B  4
-
-            72: {'left': [3],              'right': [6]},              # C  5
-            73: {'left': [],               'right': [6]},              # C# 5
-            74: {'left': [2, 4, 5],        'right': [1, 3, 5]},        # D  5
-            75: {'left': [2, 4, 5],        'right': [1, 3, 5, 6]},     # D# 5
-            76: {'left': [2, 4, 5],        'right': [1, 3, 6]},        # E  5
-            77: {'left': [2, 3, 4, 5],     'right': [1, 6]},           # F  5
-            78: {'left': [2, 3, 4, 5],     'right': [5, 6]},           # F# 5
-            79: {'left': [2, 3, 4, 5],     'right': [6]},              # G  5
-            80: {'left': [2, 3, 4, 5, 6],  'right': [6]},              # G# 5
-            81: {'left': [2, 3, 4],        'right': [6]},              # A  5
-            82: {'left': [2, 3],           'right': [1, 6]},           # A# 5
-            83: {'left': [2, 3],           'right': [6]},              # B  5
-
-            84: {'left': [3],              'right': [6]},              # C  6
-            85: {'left': [],               'right': [6]},              # C# 6
-        }
+        self.fingerings = []
 
         self.hands_colors = HANDS_COLORS_3
         self._display_mode = display_mode
@@ -59,22 +62,25 @@ class Fingering(QWidget):
 
         # for _fingering_delay
         self._tictoc = 0
-        self._next_keys = None
+        self._next_fingerings = []
         self._nb_waiting = 0
+
+        self.setMinimumWidth(200)
+        self.setMinimumHeight(100)
 
     def set_display_mode(self, display_mode, display_delay=None):
         self._display_mode = display_mode
         if display_delay is not None:
             self._display_delay = display_delay
             self._tictoc = 0
-            self._next_keys = None
+            self._next_fingerings = []
             self._nb_waiting = 0
         self._update_fingering()
 
     def _fingering_delay(self):
-        self.keys = None
+        self.fingerings = [(tuple([-1] * 6), tuple([-1] * 8))]
         self.update()
-        self._next_keys = self._compute_fingering()
+        self._next_fingerings = self._compute_fingering()
         self._nb_waiting += 1
         sleep_time = 0.01
         while self._tictoc > 0:
@@ -83,17 +89,23 @@ class Fingering(QWidget):
                 self._nb_waiting -= 1
                 return
             self._tictoc -= sleep_time
-        self.keys = self._next_keys
+        self.fingerings = self._next_fingerings
         self.update()
         self._nb_waiting -= 1
         return
 
     def _compute_fingering(self):
         try:
-            return self.midi_fingerings[self._current_note.midi_code]
+            found_fingers = FINGERINGS[self._current_note.midi_code]
+            if type(found_fingers) == tuple:
+                return [found_fingers]
+            elif type(found_fingers) == list:
+                return found_fingers
+            else:
+                print('ERROR: UNKNOWN TYPE(FOUND_FINGERS) = {}'.format(type(found_fingers)))
         except KeyError:
             print('warning, no fingering for note no {}'.format(self._current_note.midi_code))
-            return None
+            return []
 
     def _update_fingering(self):
         self.set_fingering(self._current_note)
@@ -101,132 +113,171 @@ class Fingering(QWidget):
     def set_fingering(self, note):
         self._tictoc = 0
         while self._nb_waiting > 0:
-            print('nb_wainting: {}'.format(self._nb_waiting))
             time.sleep(0.01)
 
         self._current_note = note
-
         if self._display_mode == Fingering.DISPLAY_ALWAYS:
-            self.keys = self._compute_fingering()
+            self.fingerings = self._compute_fingering()
             self.update()
         elif self._display_mode == Fingering.DISPLAY_NEVER:
-            if self.keys is not None:
-                self.keys = None
+            if self.fingerings is not None:
+                self.fingerings = None
                 self.update()
         elif self._display_mode == Fingering.DISPLAY_DELAY:
             self._tictoc = self._display_delay
             thr = threading.Thread(target=self._fingering_delay)
             thr.start()
 
-    def _get_color(self, n, hand):
-        if self.keys is not None:
-            if hand in ['left', 'right']:
-                return QColor(['white', self.hands_colors[hand]][n in self.keys[hand]])
-        return QColor('gray')
+    def _get_color(self, hand, key_index, n_fingering):
+        side = {'left': 0, 'right': 1}[hand]
+        try:
+            val = self.fingerings[n_fingering][side][key_index - 1]
+        except IndexError:
+            return Qt.Dense5Pattern
+
+        if val == -1:
+            return Qt.Dense7Pattern
+        if val == 0:
+            return QColor('white')
+        if val == 1:
+            return QColor('black')
+        if val == 2:
+            return QColor('gray')
+
+        # should never happen
+        return QColor('red')
 
     def paintEvent(self, event):
-        self.draw_fingering()
+        self.draw_fingerings()
 
-    def draw_fingering(self):
+    def draw_fingerings(self):
+        if self._display_mode == Fingering.DISPLAY_NEVER:
+            return
+
         qp = QPainter()
         qp.begin(self)
 
+        if self.fingerings is not None:
+            nb_fingerings = len(self.fingerings)
+            if nb_fingerings > 0:
+                for n_fingering in range(nb_fingerings):
+                    self._draw_fingering(qp, n_fingering, nb_fingerings)
+                    if n_fingering < (nb_fingerings - 1):
+                        self._draw_separator(qp, n_fingering, nb_fingerings)
+            else:
+                self._draw_fingering(qp)
+
+        qp.end()
+
+    def _draw_separator(self, qp, n_fingering=0, total=1):
+        w = self.width()
+        y = int((n_fingering+1) * self.height() / total)
+        dash_pen = QPen(QColor('gray'))
+        dash_pen.setStyle(Qt.DashLine)
+        qp.setPen(dash_pen)
+        qp.drawLine(10, y, w-10, y)
+
+    def _draw_fingering(self, qp, n_fingering=0, total=1):
         qp.setPen(QColor('gray'))
         qp.setBrush(QColor('#e0e0e0'))
-        qp.drawRoundedRect(0, 0, self.width(), self.height(), 5, 5)
 
         w = self.width()
-        h = self.height()
-        r = w / 40
+        h = self.height() // total
+        cy = int((n_fingering * h) + (h / 2))
+
+        # r = 0.025 * w / total
+        r = 0.015 * w
+
+        print('_draw_fingering(n_fingering={}, total={})'.format(n_fingering, total))
+        print('cy = {}'.format(cy))
+
         qp.setPen(QColor(Qt.black))
 
-        qp.setBrush(self._get_color(1, 'left'))
+        qp.setBrush(self._get_color('left', 1, n_fingering))
         qp.drawRect(
             int(0.1 * w - r),
-            int(h / 2 + 2 * r),
+            int(cy + 2 * r),
             int(2 * r),
             int(r)
         )
 
-        qp.setBrush(self._get_color(2, 'left'))
+        qp.setBrush(self._get_color('left', 2, n_fingering))
         qp.drawRect(
             int(0.1 * w + r),
-            int(h / 2 + 2 * r),
+            int(cy + 2 * r),
             int(2 * r),
             int(r)
         )
 
-        qp.setBrush(self._get_color(3, 'left'))
-        qp.drawEllipse(QPoint(int(0.15 * w), int(h / 2)), r, r)
+        qp.setBrush(self._get_color('left', 3, n_fingering))
+        qp.drawEllipse(QPoint(int(0.15 * w), cy), r, r)
 
-        qp.setBrush(self._get_color(4, 'left'))
-        qp.drawEllipse(QPoint(int(0.25 * w), int(h / 2)), r, r)
+        qp.setBrush(self._get_color('left', 4, n_fingering))
+        qp.drawEllipse(QPoint(int(0.25 * w), cy), r, r)
 
-        qp.setBrush(self._get_color(5, 'left'))
-        qp.drawEllipse(QPoint(int(0.35 * w), int(h / 2)), r, r)
+        qp.setBrush(self._get_color('left', 5, n_fingering))
+        qp.drawEllipse(QPoint(int(0.35 * w), cy), r, r)
 
-        qp.setBrush(self._get_color(6, 'left'))
+        qp.setBrush(self._get_color('left', 6, n_fingering))
         qp.drawRect(
             int(0.35 * w - r),
-            int(h / 2 - 3 * r),
+            int(cy - 3 * r),
             int(2 * r),
             int(r)
         )
 
         qp.drawLine(
             int(0.45 * w),
-            int(0.25 * h - r),
+            int(cy - 0.25 * h),
             int(0.45 * w),
-            int(0.75 * h + r),
+            int(cy + 0.25 * h),
         )
 
-        qp.setBrush(self._get_color(1, 'right'))
-        qp.drawEllipse(QPoint(int(0.55 * w), int(h / 2)), r, r)
+        qp.setBrush(self._get_color('right', 1, n_fingering))
+        qp.drawEllipse(QPoint(int(0.55 * w), cy), r, r)
 
-        qp.setBrush(self._get_color(2, 'right'))
+        qp.setBrush(self._get_color('right', 2, n_fingering))
         qp.drawRect(
-            int(0.6 * w - r/2),
-            int(h / 2 + r),
+            int(0.6 * w - r / 2),
+            int(cy + r),
             int(r),
-            int(2*r)
+            int(2 * r)
         )
 
-        qp.setBrush(self._get_color(3, 'right'))
-        qp.drawEllipse(QPoint(int(0.65 * w), int(h / 2)), r, r)
+        qp.setBrush(self._get_color('right', 3, n_fingering))
+        qp.drawEllipse(QPoint(int(0.65 * w), cy), r, r)
 
-        qp.setBrush(self._get_color(4, 'right'))
+        qp.setBrush(self._get_color('right', 4, n_fingering))
         qp.drawRect(
             int(0.7 * w - r / 2),
-            int(h / 2 + r),
+            int(cy + r),
             int(r),
             int(2 * r)
         )
 
-        qp.setBrush(self._get_color(5, 'right'))
-        qp.drawEllipse(QPoint(int(0.75 * w), int(h / 2)), r, r)
+        qp.setBrush(self._get_color('right', 5, n_fingering))
+        qp.drawEllipse(QPoint(int(0.75 * w), cy), r, r)
 
-        qp.setBrush(self._get_color(6, 'right'))
+        qp.setBrush(self._get_color('right', 6, n_fingering))
         qp.drawRect(
             int(0.85 * w - r),
-            int(h / 2 - r),
+            int(cy - r),
             int(2 * r),
             int(2 * r)
         )
 
-        qp.setBrush(self._get_color(7, 'right'))
+        qp.setBrush(self._get_color('right', 7, n_fingering))
         qp.drawRect(
             int(0.85 * w + r),
-            int(h / 2 - r),
+            int(cy - r),
             int(2 * r),
             int(r)
         )
 
-        qp.setBrush(self._get_color(8, 'right'))
+        qp.setBrush(self._get_color('right', 8, n_fingering))
         qp.drawRect(
             int(0.85 * w + r),
-            int(h / 2),
+            cy,
             int(2 * r),
             int(r)
         )
-
-        qp.end()

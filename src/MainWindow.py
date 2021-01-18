@@ -1,13 +1,12 @@
 from PyQt5.QtWidgets import *
 from functools import partial
-from PyQt5.QtCore import Qt
+# from PyQt5.QtCore import Qt
 
 from src.Staff import Staff
-from src.Note import Note
-from src.Fingering import Fingering
 from src.ScaleManager import ScaleManager
 from src.Arpeggiator import Arpeggiator
 from src.Alteration import Alterations
+from src.Fingering import Fingering
 
 
 class MenuBar(QMenuBar):
@@ -23,7 +22,6 @@ class MenuBar(QMenuBar):
             if modes is not None:
                 menu_modes = self._menu_scales.addMenu(scale_name)
                 for mode_deg, mode_name in modes.items():
-                    # mode_fullname = "{} - {}".format(mode_deg, mode_name)
                     _qaction = QAction(mode_name)
                     _qaction.triggered.connect(partial(self.set_training_scale, scale_name, mode_deg))
                     _qaction.setCheckable(True)
@@ -216,7 +214,7 @@ class MainWindow(QMainWindow):
 
         # main grid
         self._top_row.setMinimumHeight(200)
-        self.fingering.setMinimumHeight(200)
+        # self.fingering.setMinimumHeight(200)
         self._bottom_row.setFixedHeight(80)
 
         self._ww_layout.addWidget(self._top_row)
@@ -232,7 +230,6 @@ class MainWindow(QMainWindow):
     #     exit(0)
 
     def toggle_autonext(self):
-        # self._autonext = not self._autonext
         if self._ft.is_autonext():
             self._button_autonext.setText('Enable AutoNext')
             self._ft.set_autonext(False)
@@ -256,9 +253,6 @@ class MainWindow(QMainWindow):
             self._right_staff.display_note(note, ndec)
         else:
             print('ERROR: unknown staff "{}"'.format(staff))
-
-    def set_fingering(self, note):
-        self.fingering.set_fingering(note)
 
     def erase_note(self, staff):
         if staff == 'left':
