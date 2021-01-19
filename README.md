@@ -2,16 +2,22 @@
 Since I'm cheap and nerdy, I've made myself an Artificial Flute Teacher!
 
 Here is a screenshot of the actual version:
-![Screen1](doc_res/screen3.png)
+![Screen1](doc_res/screen-v0.6.png)
 
 ## To-do list (by decreasing priority):
+### Fingerings:
+- [ ] Split class to:
+  - Fingerings (= controls, ...)
+  - FingeringsWidget
 ### GUI
+- [ ] Take Settings Class's values in account in the MenuBar
 - [x] when selecting scale / octave / arp, display warning if not playable
   -> this was finally pretty complex!
 ### Timer:
 - [ ] Add a practicing timer??
 ### Staffs:
-- [ ] make note gray if not playable = no fingering
+- [x] make note gray if not playable = no fingering
+  -> Warning if not playable -> no "no playable" fingering
 - [ ] add view choices : single / continuous
   - [ ] add corresponding GUI option
 ### Help popup:

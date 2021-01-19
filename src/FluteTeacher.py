@@ -1,13 +1,14 @@
 import threading
 from time import sleep
+from copy import copy
 
 from src.Note import Note
 from src.HearAI import HearAI
 from src.ScaleManager import ScaleManager
 from src.Arpeggiator import Arpeggiator
 from src.MainWindow import MainWindow
-from src.Fingering import Fingering, FingeringError
-from copy import copy
+from src.Fingerings import Fingerings, FingeringError
+from src.Settings import Settings
 
 
 VALIDATE_NOTE = True
@@ -18,16 +19,23 @@ class FluteTeacher:
     def __init__(self):
         self._current_note = None
         self._heard_note = None
-        self._listening = False
-        self._autonext = False
-        self._start_octave = 4
+        self._listening = Settings.START_LISTENING_AT_STARTUP
+        self._autonext = Settings.START_AUTONEXT_AT_STARTUP
+        #-- self._start_octave = Settings.DEFAULT_BASE_NOTE_OCTAVE
 
         # MAIN WINDOW
         self._main_window = MainWindow(flute_teacher=self)
 
         # SCALE MANAGER AND ARPEGGIATOR
-        self._scale_manager = ScaleManager('Major', Note('C', self._start_octave), mode=1)
-        self._arpeggiator = Arpeggiator(self._scale_manager, kind=Arpeggiator.UP, n_octaves=1)
+        self._scale_manager = ScaleManager(scale_name=Settings.DEFAULT_SCALE_NAME,
+                                           base_note=Note(letter=Settings.DEFAULT_BASE_NOTE_LETTER,
+                                                          alteration=Settings.DEFAULT_BASE_NOTE_ALTERATION,
+                                                          octave=Settings.DEFAULT_BASE_NOTE_OCTAVE),
+                                           mode=Settings.DEFAULT_SCALE_MODE)
+
+        self._arpeggiator = Arpeggiator(self._scale_manager,
+                                        kind=Settings.DEFAULT_ARPEGGIATOR_KIND,
+                                        n_octaves=Settings.DEFAULT_ARP_N_OCTAVES)
         self.next_note()
 
         # NOTE RECOGNITION
@@ -112,7 +120,7 @@ class FluteTeacher:
         _arpeggiator_tmp = copy(self._arpeggiator)
         _arpeggiator_tmp.set_scale_manager(_scale_mgr_tmp)
 
-        if Fingering.check_notes(_arpeggiator_tmp.get_notes()):
+        if Fingerings.check_notes(_arpeggiator_tmp.get_notes()):
             self._scale_manager = _scale_mgr_tmp
             self._arpeggiator = _arpeggiator_tmp
             self.next_note()
@@ -126,7 +134,7 @@ class FluteTeacher:
         _arpeggiator_tmp = copy(self._arpeggiator)
         _arpeggiator_tmp.set_scale_manager(_scale_mgr_tmp)
 
-        if Fingering.check_notes(_arpeggiator_tmp.get_notes()):
+        if Fingerings.check_notes(_arpeggiator_tmp.get_notes()):
             self._scale_manager = _scale_mgr_tmp
             self._arpeggiator = _arpeggiator_tmp
             self.next_note()
@@ -140,7 +148,7 @@ class FluteTeacher:
         _arpeggiator_tmp = copy(self._arpeggiator)
         _arpeggiator_tmp.set_scale_manager(_scale_mgr_tmp)
 
-        if Fingering.check_notes(_arpeggiator_tmp.get_notes()):
+        if Fingerings.check_notes(_arpeggiator_tmp.get_notes()):
             self._scale_manager = _scale_mgr_tmp
             self._arpeggiator = _arpeggiator_tmp
             self.next_note()
@@ -151,7 +159,7 @@ class FluteTeacher:
     def set_arpeggiator(self, kind, n_octaves):
         _arpeggiator_tmp = Arpeggiator(self._scale_manager, kind, n_octaves)
 
-        if Fingering.check_notes(_arpeggiator_tmp.get_notes()):
+        if Fingerings.check_notes(_arpeggiator_tmp.get_notes()):
             self._arpeggiator = _arpeggiator_tmp
             self.next_note()
         else:
@@ -160,3 +168,9 @@ class FluteTeacher:
 
     def set_fingering_display_mode(self, mode, delay):
         self._main_window.fingering.set_display_mode(mode, delay)
+
+    def set_fingering_key_color(self, color):
+        self.fingering.set_fingering_key_color(color)
+
+    def set_fingering_delay_color(self, color):
+        self.fingering.set_fingering_delay_color(color)

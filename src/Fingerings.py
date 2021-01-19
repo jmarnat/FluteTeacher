@@ -1,19 +1,38 @@
+import threading
+import time
+from random import randint
+
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
-import threading
-import time
+from src.Settings import Settings
 
-KEY_BORDER_COLOR = '#000000'
-KEY_BORDER_WEIGHT = 2
 
-KEY_PRESSED_COLORS = {
-    0: '#ffffff',
-    1: '#0a67a3',
-    2: '#888888'
-}
+# ------------------------------- STYLE SHEET -------------------------------- #
+class StyleSheet:
+    KEY_BORDER_COLOR = '#000000'
+    KEY_BORDER_WEIGHT = 2
 
+    # KEY_COLOR_CLOSED = '#6e93d6'
+    # KEY_COLOR_OPEN = '#ffffff'
+    # KEY_COLOR_DELAY = '#c0c0c0'
+
+    COLOR_RELEASED_KEYS = '#ffffff'
+    COLOR_OPTIONNAL_KEYS = '#888888'
+
+    COLORS_PRESSED_KEYS = {
+        'Black': '#000000',
+        'Blue':  '#64b5f6',     # dark: 6e93d6, light: 64b5f6
+    }
+
+    COLORS_DELAY_KEYS = {
+        'Gray': '#c0c0c0',
+        'Rainbow': 'RAINBOW'
+    }
+
+
+# -------------------------------- FINGERINGS -------------------------------- #
 FINGERINGS = {
     60: [((0, 1, 1, 1, 1, 0), (1, 0, 1, 0, 1, 0, 1, 2))],  # C  4
     61: [((0, 1, 1, 1, 1, 0), (1, 0, 1, 0, 1, 0, 1, 0))],  # C# 4
@@ -64,22 +83,34 @@ FINGERINGS = {
 
 
 class FingeringError(Exception):
+    """
+    Just for warning in MainWindow
+    """
     pass
 
 
-class Fingering(QWidget):
+class Fingerings(QWidget):
+    """
+    Both model, view and controller for fingerings
+    """
     DISPLAY_ALWAYS = 1
     DISPLAY_DELAY = 2
     DISPLAY_NEVER = 3
 
-    def __init__(self, display_mode=DISPLAY_ALWAYS, display_delay=3):
-        super(Fingering, self).__init__(flags=Qt.Widget)
+    def __init__(self,
+                 display_mode=DISPLAY_ALWAYS,
+                 display_delay=None):
+        super(Fingerings, self).__init__(flags=Qt.Widget)
 
         self.fingerings = []
 
         self._display_mode = display_mode
         self._display_delay = display_delay
         self._current_note = None
+
+        # default colors = first in dictionnaries
+        self._color_key = StyleSheet.COLORS_PRESSED_KEYS[list(StyleSheet.COLORS_PRESSED_KEYS.keys())[0]]
+        self._color_delay = StyleSheet.COLORS_DELAY_KEYS[list(StyleSheet.COLORS_DELAY_KEYS.keys())[0]]
 
         # for _fingering_delay
         self._tictoc = 0
@@ -150,14 +181,14 @@ class Fingering(QWidget):
             time.sleep(0.01)
 
         self._current_note = note
-        if self._display_mode == Fingering.DISPLAY_ALWAYS:
+        if self._display_mode == Fingerings.DISPLAY_ALWAYS:
             self.fingerings = self._get_fingerings()
             self.update()
-        elif self._display_mode == Fingering.DISPLAY_NEVER:
+        elif self._display_mode == Fingerings.DISPLAY_NEVER:
             if self.fingerings is not None:
                 self.fingerings = None
                 self.update()
-        elif self._display_mode == Fingering.DISPLAY_DELAY:
+        elif self._display_mode == Fingerings.DISPLAY_DELAY:
             if note.midi_code in FINGERINGS.keys():
                 self._tictoc = self._display_delay
                 thr = threading.Thread(target=self._fingering_delay)
@@ -166,6 +197,14 @@ class Fingering(QWidget):
                 self.fingerings = [(None, None)]
                 self.update()
 
+    def set_key_color(self, color):
+        self._color_key = color
+        self.update()
+
+    def set_delay_color(self, color):
+        self._color_delay = color
+        self.update()
+
     def _get_key_color(self, side, key_index, n_fingering):
         """
         :param side: 0=left, 1=right
@@ -173,26 +212,27 @@ class Fingering(QWidget):
         :param n_fingering: if multiple fingerings, its' number (0->2?)
         :return: the associated QColor
         """
-        # key not available
-        if self.fingerings[0] == (None, None):
-            return Qt.Dense5Pattern
 
-        # key delayed
+        # key delayed -> set wo weird values
         if self.fingerings[0] == (-1, -1):
-            brush = QBrush(Qt.Dense7Pattern)
-            brush.setColor(QColor('white'))
-            # brush.set
-            # brush.
-
-            # pattern.
-            return brush
+            if self._color_delay == 'RAINBOW':
+                _rr = randint(150, 256)
+                _gg = randint(150, 256)
+                _bb = randint(150, 256)
+                return QColor(_rr, _gg, _bb)
+            else:
+                return QColor(self._color_delay)
 
         # getting key value
         val = self.fingerings[n_fingering][side][key_index - 1]
 
         # key not pressed / pressed / optionnal
-        if val in KEY_PRESSED_COLORS.keys():
-            return QColor(KEY_PRESSED_COLORS[val])
+        if val == 0:
+            return QColor(StyleSheet.COLOR_RELEASED_KEYS)
+        if val == 1:
+            return QColor(self._color_key)
+        if val == 2:
+            return QColor(StyleSheet.COLOR_OPTIONNAL_KEYS)
 
         # should never happen
         return QColor('red')
@@ -201,7 +241,7 @@ class Fingering(QWidget):
         self.draw_fingerings()
 
     def draw_fingerings(self):
-        if self._display_mode == Fingering.DISPLAY_NEVER:
+        if self._display_mode == Fingerings.DISPLAY_NEVER:
             return
 
         qp = QPainter()
@@ -276,13 +316,13 @@ class Fingering(QWidget):
         cy = int((n_fingering * h) + (h / 2))
         r = min(flute_h/10, w/30)
 
-        border_pen = QPen(QColor(KEY_BORDER_COLOR), KEY_BORDER_WEIGHT)
+        border_pen = QPen(QColor(StyleSheet.KEY_BORDER_COLOR), StyleSheet.KEY_BORDER_WEIGHT)
         qp.setPen(border_pen)
 
         # ---------------------------- LEFT HAND ----------------------------- #
         qp.setBrush(self._get_key_color(0, 1, n_fingering))
         qp.drawRect(
-            int(0.1 * w - r),
+            int(0.15 * w - 3 * r),
             int(cy + 2 * r),
             int(2 * r),
             int(r)
@@ -290,7 +330,7 @@ class Fingering(QWidget):
 
         qp.setBrush(self._get_key_color(0, 2, n_fingering))
         qp.drawRect(
-            int(0.1 * w + r),
+            int(0.15 * w - r),
             int(cy + 2 * r),
             int(2 * r),
             int(r)

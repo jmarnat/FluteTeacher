@@ -2,11 +2,13 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import *
 import sys
 from src.FluteTeacher import FluteTeacher
+from src.Settings import *
 
 
 class MainApp(QApplication):
     def __init__(self, argv):
         super(MainApp, self).__init__(argv)
+        self.setStyleSheet(Settings.MAIN_APP_STYLE_SHEET)
 
     def quit(self):
         print('bye bye')

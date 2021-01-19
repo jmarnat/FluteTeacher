@@ -6,7 +6,8 @@ from src.Staff import Staff
 from src.ScaleManager import ScaleManager
 from src.Arpeggiator import Arpeggiator
 from src.Alteration import Alterations
-from src.Fingering import Fingering, FingeringError
+from src.Fingerings import Fingerings, FingeringError, StyleSheet
+from src.Settings import Settings
 
 
 class MenuBar(QMenuBar):
@@ -16,13 +17,13 @@ class MenuBar(QMenuBar):
         self._parent = parent
 
         # DEFAULT MENUS VALUES
-        self._scale_name = 'Major'
-        self._scale_mode = 1
-        self._arp_noct = 1
-        self._arp_kind = Arpeggiator.UP
-        self._base_note_letter = 'C'
-        self._base_note_alteration = Alterations.NATURAL
-        self._start_from_oct = 4
+        self._scale_name = Settings.DEFAULT_SCALE_NAME
+        self._scale_mode = Settings.DEFAULT_SCALE_MODE
+        self._arp_noct = Settings.DEFAULT_ARP_N_OCTAVES
+        self._arp_kind = Settings.DEFAULT_ARPEGGIATOR_KIND
+        self._base_note_letter = Settings.DEFAULT_BASE_NOTE_LETTER
+        self._base_note_alteration = Settings.DEFAULT_BASE_NOTE_ALTERATION
+        self._start_from_oct = Settings.DEFAULT_BASE_NOTE_OCTAVE
 
         # --------------------------------------------- SCALES AND MODES --------------------------------------------- #
         self._menu_scales = self.addMenu('Scales and Modes')
@@ -43,6 +44,8 @@ class MenuBar(QMenuBar):
                 _qaction = QAction(scale_name)
                 _qaction.triggered.connect(partial(self.set_training_scale, scale_name, None))
                 _qaction.setCheckable(True)
+                if scale_name == self._scale_name:
+                    _qaction.setChecked(True)
                 self._menu_scales.addAction(_qaction)
                 self._menu_scales_qactions[(scale_name, None)] = _qaction
 
@@ -59,7 +62,7 @@ class MenuBar(QMenuBar):
                 _qaction = QAction(_note_str)
                 _qaction.triggered.connect(partial(self.set_training_base_note, _letter, _alt))
                 _qaction.setCheckable(True)
-                if _note_str == 'C':
+                if (_letter, _alt) == (self._base_note_letter, self._base_note_alteration):
                     _qaction.setChecked(True)
                 self._menu_start_from_basenote.addAction(_qaction)
                 self._menu_start_from_basenote_qactions[(_letter, _alt)] = _qaction
@@ -72,7 +75,7 @@ class MenuBar(QMenuBar):
             _qaction = QAction(_oct_str)
             _qaction.triggered.connect(partial(self.set_training_octave, _oct_val))
             _qaction.setCheckable(True)
-            if _oct_val == 4:
+            if _oct_val == self._start_from_oct:
                 _qaction.setChecked(True)
             self._menu_start_from_oct.addAction(_qaction)
             self._menu_start_from_oct_qactions[_oct_val] = _qaction
@@ -86,7 +89,7 @@ class MenuBar(QMenuBar):
                 _arp_full_str = "{} - {}".format(_noct_str, _arp_kind_str)
                 _qaction = QAction(_arp_full_str, self._menu_arps)
                 _qaction.setCheckable(True)
-                if _arp_full_str == "1 Octave - Up":
+                if (_arp_kind, _noct) == (self._arp_kind, self._arp_noct):
                     _qaction.setChecked(True)
                 _qaction.triggered.connect(partial(self.set_arpeggiator, _arp_kind, _noct))
                 self._menu_arps_actions[(_arp_kind, _noct)] = _qaction
@@ -100,25 +103,50 @@ class MenuBar(QMenuBar):
         self._menu_fingerings_actions = {}
 
         _qaction_fgr_always = QAction('Always visible', self._menu_fingerings)
-        _qaction_fgr_always.triggered.connect(partial(self.set_fingering_display_mode, Fingering.DISPLAY_ALWAYS, None))
+        _qaction_fgr_always.triggered.connect(partial(self.set_fingering_display_mode, Fingerings.DISPLAY_ALWAYS, None))
         _qaction_fgr_always.setCheckable(True)
         _qaction_fgr_always.setChecked(True)
         self._menu_fingerings.addAction(_qaction_fgr_always)
-        self._menu_fingerings_actions[(Fingering.DISPLAY_ALWAYS, None)] = _qaction_fgr_always
+        self._menu_fingerings_actions[(Fingerings.DISPLAY_ALWAYS, None)] = _qaction_fgr_always
 
         _qaction_fgr_never = QAction('Always hidden', self._menu_fingerings)
-        _qaction_fgr_never.triggered.connect(partial(self.set_fingering_display_mode, Fingering.DISPLAY_NEVER, None))
+        _qaction_fgr_never.triggered.connect(partial(self.set_fingering_display_mode, Fingerings.DISPLAY_NEVER, None))
         _qaction_fgr_never.setCheckable(True)
         self._menu_fingerings.addAction(_qaction_fgr_never)
-        self._menu_fingerings_actions[(Fingering.DISPLAY_NEVER, None)] = _qaction_fgr_never
+        self._menu_fingerings_actions[(Fingerings.DISPLAY_NEVER, None)] = _qaction_fgr_never
 
         self._menu_fingerings.addSeparator()
-        for d in (1, 2, 3, 4, 5):
+        for d in Settings.FINGERINGS_DELAYS:
             _qaction_fgr_delay = QAction('Display after {}s'.format(d), self._menu_fingerings)
-            _qaction_fgr_delay.triggered.connect(partial(self.set_fingering_display_mode, Fingering.DISPLAY_DELAY, d))
+            _qaction_fgr_delay.triggered.connect(partial(self.set_fingering_display_mode, Fingerings.DISPLAY_DELAY, d))
             _qaction_fgr_delay.setCheckable(True)
             self._menu_fingerings.addAction(_qaction_fgr_delay)
-            self._menu_fingerings_actions[(Fingering.DISPLAY_DELAY, d)] = _qaction_fgr_delay
+            self._menu_fingerings_actions[(Fingerings.DISPLAY_DELAY, d)] = _qaction_fgr_delay
+
+        self._menu_fingerings.addSeparator()
+
+        # --------------------------------------------- FINGERING COLORS --------------------------------------------- #
+        self._menu_key_colors = self._menu_fingerings.addMenu('Pressed keys colors')
+        self._menu_key_colors_qactions = {}
+        for ic, (color_name, color_code) in enumerate(StyleSheet.COLORS_PRESSED_KEYS.items()):
+            _qa = QAction(color_name)
+            _qa.triggered.connect(partial(self.set_key_color, color_code))
+            _qa.setCheckable(True)
+            if ic == 0:
+                _qa.setChecked(True)
+            self._menu_key_colors.addAction(_qa)
+            self._menu_key_colors_qactions[color_code] = _qa
+
+        self._menu_delay_colors = self._menu_fingerings.addMenu('Delay colors')
+        self._menu_delay_colors_qactions = {}
+        for ic, (color_name, color_code) in enumerate(StyleSheet.COLORS_DELAY_KEYS.items()):
+            _qa = QAction(color_name)
+            _qa.setCheckable(True)
+            if ic == 0:
+                _qa.setChecked(True)
+            _qa.triggered.connect(partial(self.set_delay_color, color_code))
+            self._menu_delay_colors.addAction(_qa)
+            self._menu_delay_colors_qactions[color_code] = _qa
 
     def set_training_scale(self, scale_name, mode):
         try:
@@ -186,6 +214,22 @@ class MenuBar(QMenuBar):
         msg_box.setIcon(QMessageBox.Warning)
         msg_box.exec_()
 
+    def set_key_color(self, color_code):
+        self._parent.fingering.set_key_color(color_code)
+        for _cc, _qaction in self._menu_key_colors_qactions.items():
+            if _cc == color_code:
+                _qaction.setChecked(True)
+            else:
+                _qaction.setChecked(False)
+
+    def set_delay_color(self, color_code):
+        self._parent.fingering.set_delay_color(color_code)
+        for _cc, _qaction in self._menu_delay_colors_qactions.items():
+            if _cc == color_code:
+                _qaction.setChecked(True)
+            else:
+                _qaction.setChecked(False)
+
 
 class MainWindow(QMainWindow):
     def __init__(self, flute_teacher, width=800, height=600):
@@ -221,27 +265,34 @@ class MainWindow(QMainWindow):
         self._top_row_layout.addWidget(self._right_staff)
 
         # SECOND ROW
-        self.fingering = Fingering()
+        self.fingering = Fingerings()
 
         # BOTTOM ROW
         self._bottom_row = QGroupBox()
         self._bottom_row_layout = QHBoxLayout(self._bottom_row)
         self._bottom_row.setLayout(self._bottom_row_layout)
 
-        self._next_button = QPushButton('Next note')
-        self._next_button.clicked.connect(self._ft.next_note)
-        self._next_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self._bottom_row_layout.addWidget(self._next_button)
+        self._button_next_note = QPushButton('Next note')
+        self._button_next_note.clicked.connect(self._ft.next_note)
+        self._button_next_note.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        # self._button_next_note.setStyleSheet(BUTTONS_STYLESHEET)
+        self._bottom_row_layout.addWidget(self._button_next_note)
 
         self._button_autonext = QPushButton('Enable AutoNext' if not self._ft.is_autonext() else 'Disable AutoNext')
+        # self._button_autonext.setObjectName('Active')
+        if self._ft.is_autonext():
+            self._button_autonext.setStyleSheet('font-weight: bold')
         self._button_autonext.clicked.connect(self.toggle_autonext)
         self._button_autonext.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self._bottom_row_layout.addWidget(self._button_autonext)
 
         self._button_listening = QPushButton('Start listening' if not self._ft.is_listening() else 'Stop listening')
+        # self._button_listening.setObjectName('active')
+        if self._ft.is_listening():
+            self._button_listening.setStyleSheet('font-weight: bold')
         self._button_listening.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self._button_listening.clicked.connect(self.toggle_listening)
-
+        # self._button_listening.mou
         self._bottom_row_layout.addWidget(self._button_listening)
 
         # main grid
@@ -263,19 +314,23 @@ class MainWindow(QMainWindow):
     def toggle_autonext(self):
         if self._ft.is_autonext():
             self._button_autonext.setText('Enable AutoNext')
+            self._button_autonext.setStyleSheet('font-weight: regular')
             self._ft.set_autonext(False)
         else:
             self._button_autonext.setText('Disable AutoNext')
+            self._button_autonext.setStyleSheet('font-weight: bold')
             self._ft.set_autonext(True)
 
     def toggle_listening(self):
         if self._ft.is_listening():
             self._ft.stop_listening()
             self._button_listening.setText('Start listening')
+            self._button_listening.setStyleSheet('font-weight: regular')
             self._right_staff.erase_note()
         else:
             self._ft.start_listening()
             self._button_listening.setText('Stop listening')
+            self._button_listening.setStyleSheet('font-weight: bold')
 
     def display_note(self, staff, note, ndec=None):
         if staff == 'left':
