@@ -2,12 +2,14 @@
 Since I'm cheap and nerdy, I've made myself an Artificial Flute Teacher!
 
 Here is a screenshot of the actual version:
-![Screen1](doc_res/screen2.png)
+![Screen1](doc_res/screen3.png)
 
 ## To-do list (by decreasing priority):
+### GUI
+- [x] when selecting scale / octave / arp, display warning if not playable
+  -> this was finally pretty complex!
 ### Timer:
-- [ ] Add a practicing timer?? 
-
+- [ ] Add a practicing timer??
 ### Staffs:
 - [ ] make note gray if not playable = no fingering
 - [ ] add view choices : single / continuous
