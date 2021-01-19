@@ -2,7 +2,7 @@
 Since I'm cheap and nerdy, I've made myself an Artificial Flute Teacher!
 
 Here is an animated GIF of the actual version running:
-![Animation](doc_res/animation-v0.7-test2.gif)
+![Animation](doc_res/animation-v0.7-test2.gif?raw=true)
 
 ## To-do list (by decreasing priority):
 ### Fingerings:
