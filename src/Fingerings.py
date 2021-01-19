@@ -266,8 +266,9 @@ class Fingerings(QWidget):
     def _draw_separator(self, qp, n_fingering=0, total=1):
         w = self.width()
         y = int((n_fingering+1) * self.height() / total)
-        dash_pen = QPen(QColor('gray'))
+        dash_pen = QPen(QColor('#ababab'))
         dash_pen.setStyle(Qt.DashLine)
+        dash_pen.setWidth(1)
         qp.setPen(dash_pen)
         qp.drawLine(10, y, w-10, y)
 

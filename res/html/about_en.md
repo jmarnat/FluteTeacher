@@ -1,3 +1,17 @@
+# About FluteTeacher
+
+I was starting to learn flute on a book, but found the training method not quite adapted to people who like me already know music a bit.
+My first solution was to try Android apps who kind-of teaches you fingerings, but I didn't found any of them complete nor enjoyable enough...
+So I made this app in order to properly learn a bunch of fingerings before trying to play dumb melodies with only two notes for like a month.
+
+Also, this was quite (and still is) an interesting coding challenge.
+
+Developped in Python. Of course.
+
+Please visit [www.josselinmarnat.com](http://www.josselinmarnat.com) for other apps, music, and woodwooking stuff.
+
+---
+
 ## Version History:
 ### v0.7
 - Default Settings (in class, see later for a configuration file maybe):
@@ -54,7 +68,6 @@
 - General GUI:
   - buttons: set fixed height + change look?
 
-
 ### v0.3:
 - Scales:
   - True scale generator (with intervals)
@@ -83,8 +96,11 @@
   - add sharp and flat symbols
   - corresp note number -> correct true note
 - HearAI (note recognition module):
-  - note recognition based on FFT &rarr;
+  - note recognition based on FFT
   - HearAI: continuous listening
   - on HearAI: no note if SNR < threshold &rarr; set with volume only
   - recognized note display
   - automatic note validation
+
+---
+&copy; Josselin MARNAT 2021

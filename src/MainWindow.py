@@ -55,11 +55,13 @@ class MenuBar(QMenuBar):
 
         self._menu_start_from_basenote = self._menu_start_from.addMenu('Base note')
         self._menu_start_from_basenote_qactions = {}
+        notes_corresp = {'A': 'La', 'B': 'Si', 'C': 'Do', 'D': 'Ré', 'E': 'Mi', 'F': 'Fa', 'G': 'Sol'}
         for _alt in [Alterations.NATURAL, Alterations.FLAT, Alterations.SHARP]:
             for _letter in "CDEFGAB":
-                _note_str = "{}{}".format(_letter, str(_alt))
+                _note_str = "{}{}".format(_letter, _alt)
                 if _note_str in ['Cb', 'Fb', 'B#', 'E#']:
                     continue
+                _note_str = "{} / {} {}".format(_letter, notes_corresp[_letter], _alt)
                 _qaction = QAction(_note_str)
                 _qaction.triggered.connect(partial(self.set_training_base_note, _letter, _alt))
                 _qaction.setCheckable(True)
@@ -237,24 +239,21 @@ class MenuBar(QMenuBar):
                 _qaction.setChecked(False)
 
     def show_about(self):
-        about_text = ""
         with open('res/html/about_en.html') as fin:
             about_text = "\n".join(fin.readlines())
-        print(about_text)
 
         about_window = QDialog()
-        # about_window.setFixedWidth(500)
         about_layout = QVBoxLayout()
-        # about_layout.addStretch(1)
-        # about_layout.setSpacing(0)
-        about_layout.setContentsMargins(0, 0, 0, 0)
+        about_layout.setContentsMargins(5, 5, 5, 5)
 
         about_window.setLayout(about_layout)
 
         content = QLabel()
         content.setText(about_text)
         content.setFixedWidth(500)
+        content.setWordWrap(True)
         content.setStyleSheet("background: #123456; color: white; padding: 30px;")
+        content.setAlignment(Qt.AlignJustify)
         q_scroll = QScrollArea()
         q_scroll.setWidget(content)
         q_scroll.setMinimumWidth(500)

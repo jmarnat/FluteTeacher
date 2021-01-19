@@ -4,11 +4,11 @@ from src.Alteration import *
 
 class Settings:
     # ------------------ LISTENING AND AUTONEXT AT STARTUP ------------------- #
-    START_LISTENING_AT_STARTUP = True
-    START_AUTONEXT_AT_STARTUP = True
+    START_LISTENING_AT_STARTUP = False
+    START_AUTONEXT_AT_STARTUP = False
 
     # ---------------------------- DEFAULT SCALE ----------------------------- #
-    DEFAULT_SCALE_NAME = 'Chromatic'
+    DEFAULT_SCALE_NAME = 'Major'
     DEFAULT_SCALE_MODE = 1
 
     # ------------------------- DEFAULT ARPEGGIATOR -------------------------- #
