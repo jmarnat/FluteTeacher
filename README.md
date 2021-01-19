@@ -1,23 +1,17 @@
 # FluteTeacher
 Since I'm cheap and nerdy, I've made myself an Artificial Flute Teacher!
 
-Here is a screenshot of the actual version:
-![Screen1](doc_res/screen-v0.6.png)
+Here is an animated GIF of the actual version running:
+![Animation](doc_res/animation-v0.7-test2.gif)
 
 ## To-do list (by decreasing priority):
 ### Fingerings:
-- [ ] Split class to:
+- [ ] Split classes to:
   - Fingerings (= controls, ...)
   - FingeringsWidget
-### GUI
-- [ ] Take Settings Class's values in account in the MenuBar
-- [x] when selecting scale / octave / arp, display warning if not playable
-  -> this was finally pretty complex!
 ### Timer:
 - [ ] Add a practicing timer??
 ### Staffs:
-- [x] make note gray if not playable = no fingering
-  -> Warning if not playable -> no "no playable" fingering
 - [ ] add view choices : single / continuous
   - [ ] add corresponding GUI option
 ### Help popup:
@@ -57,6 +51,15 @@ Here is a screenshot of the actual version:
 - [ ] for multiple notes: better auto placement (100px + proportion?)
 
 ## Version History:
+### v0.7
+- Default Settings (in class, see later for a configuration file maybe):
+  - Take Settings Class's values in account in the MenuBar
+- General GUI:
+  - When selecting scale / octave / arp in the MenuBar, display warning if not playable &rarr; this was finally pretty complex!
+  - Added CSS on for buttons + hovers, pretty nice!
+  - Added colors selection for fingerings, including:
+    - key pressed: black or blue,
+    - delayed keys: grays or rainbow yeah.
 
 ### v0.6
 - Fingering:
