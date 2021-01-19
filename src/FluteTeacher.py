@@ -6,6 +6,8 @@ from src.HearAI import HearAI
 from src.ScaleManager import ScaleManager
 from src.Arpeggiator import Arpeggiator
 from src.MainWindow import MainWindow
+from src.Fingering import Fingering, FingeringError
+from copy import copy
 
 
 VALIDATE_NOTE = True
@@ -94,31 +96,67 @@ class FluteTeacher:
         self._main_window.erase_note(staff='right')
         return None
 
-    def set_start_octave(self, start_octave=4):
-        self._scale_manager.set_octave(start_octave)
-        self._arpeggiator.set_scale_manager(self._scale_manager)
-        self.next_note()
+    # def check_playability(self):
+    #     Fingering.check_notes(self._arpeggiator.get_notes())
+        # is_ok = Fingering.check_notes(self._arpeggiator.get_notes())
+        # if not is_ok:
+        #     print('WARNING: CONTAINS UNREGISTERED FINGERINGS')
+        #     self._main_window.display_fingering_warning()
 
-    def set_base_note(self, letter, alteration):
-        self._scale_manager.set_basenote(letter, alteration)
-        self._arpeggiator.set_scale_manager(self._scale_manager)
-        self.next_note()
+    # def get_start_octave(self):
+    #     return self._start_octave
 
     def set_scale(self, scale_name, mode):
-        self._scale_manager.set_scale(scale_name, mode)
-        self._arpeggiator.set_scale_manager(self._scale_manager)
-        self.next_note()
+        _scale_mgr_tmp = copy(self._scale_manager)
+        _scale_mgr_tmp.set_scale(scale_name, mode)
+        _arpeggiator_tmp = copy(self._arpeggiator)
+        _arpeggiator_tmp.set_scale_manager(_scale_mgr_tmp)
 
-    def set_scale_manager(self, scale_manager):
-        _octave_bkp = self._scale_manager.get_octave()
-        self._scale_manager = scale_manager
-        self._scale_manager.set_octave(_octave_bkp)
-        self._arpeggiator.set_scale_manager(self._scale_manager)
-        self.next_note()
+        if Fingering.check_notes(_arpeggiator_tmp.get_notes()):
+            self._scale_manager = _scale_mgr_tmp
+            self._arpeggiator = _arpeggiator_tmp
+            self.next_note()
+        else:
+            print('FluteTeacher.set_scale() -> FingeringError')
+            raise FingeringError
+
+    def set_base_note(self, letter, alteration):
+        _scale_mgr_tmp = copy(self._scale_manager)
+        _scale_mgr_tmp.set_basenote(letter, alteration)
+        _arpeggiator_tmp = copy(self._arpeggiator)
+        _arpeggiator_tmp.set_scale_manager(_scale_mgr_tmp)
+
+        if Fingering.check_notes(_arpeggiator_tmp.get_notes()):
+            self._scale_manager = _scale_mgr_tmp
+            self._arpeggiator = _arpeggiator_tmp
+            self.next_note()
+        else:
+            print('FluteTeacher.set_base_note() -> FingeringError')
+            raise FingeringError
+
+    def set_start_octave(self, start_octave=4):
+        _scale_mgr_tmp = copy(self._scale_manager)
+        _scale_mgr_tmp.set_octave(start_octave)
+        _arpeggiator_tmp = copy(self._arpeggiator)
+        _arpeggiator_tmp.set_scale_manager(_scale_mgr_tmp)
+
+        if Fingering.check_notes(_arpeggiator_tmp.get_notes()):
+            self._scale_manager = _scale_mgr_tmp
+            self._arpeggiator = _arpeggiator_tmp
+            self.next_note()
+        else:
+            print('FluteTeacher.set_start_octave() -> FingeringError')
+            raise FingeringError
 
     def set_arpeggiator(self, kind, n_octaves):
-        self._arpeggiator = Arpeggiator(self._scale_manager, kind, n_octaves)
-        self.next_note()
+        _arpeggiator_tmp = Arpeggiator(self._scale_manager, kind, n_octaves)
+
+        if Fingering.check_notes(_arpeggiator_tmp.get_notes()):
+            self._arpeggiator = _arpeggiator_tmp
+            self.next_note()
+        else:
+            print('FluteTeacher.set_arpeggiator() -> FingeringError')
+            raise FingeringError
 
     def set_fingering_display_mode(self, mode, delay):
         self._main_window.fingering.set_display_mode(mode, delay)

@@ -1,6 +1,6 @@
 from src.Intervals import Intervals
 from src.Note import Note
-
+from copy import copy
 
 class ScaleManager:
     VALID_MODES = {
@@ -252,3 +252,6 @@ class ScaleManager:
 
     def get_octave(self):
         return self._base_note.octave
+
+    # def copy(self):
+    #     return (self)

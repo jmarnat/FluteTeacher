@@ -24,10 +24,12 @@ class Arpeggiator:
         self._scale_manager = scale_mgr
         self._init_mode()
 
+    # ununsed?
     def set_mode(self, mode):
         self._kind = mode
         self._init_mode()
 
+    # ununsed?
     def set_noctaves(self, n_octaves):
         self._noct = n_octaves
         self._init_mode()
@@ -87,17 +89,15 @@ class Arpeggiator:
 
     def _init_mode_thirds_down(self):
         _sc = self._init_mode_up()
-        # _sc_down = [_sc[0].get_8va(self._noct)] + _sc[1:][::-1]
         _sc_down = self._init_mode_down()
 
         thirds_a = _sc_down[:-1]
         thirds_b = thirds_a[2:] + [_sc[-1].get_8va(-self._noct), _sc[-2].get_8va(-self._noct)]
 
         self._notes = []
-        # for _oct in range(self._noct, 0, -1):
         for note_a, note_b in zip(thirds_a, thirds_b):
-            self._notes.append(note_a)#.get_8va(_oct-1))
-            self._notes.append(note_b)#.get_8va(_oct-1))
+            self._notes.append(note_a)
+            self._notes.append(note_b)
 
         self._notes.append(_sc[0])
         return self._notes
@@ -155,6 +155,9 @@ class Arpeggiator:
             self._isdone = False
             self._pos += 1
         return current_note
+
+    def get_notes(self):
+        return self._notes
 
     def is_done(self):
         return self._isdone

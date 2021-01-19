@@ -2,9 +2,9 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
-COLOR_LOW = 'red'
-COLOR_HIGH = 'blue'
-COLOR_OK = 'green'
+COLOR_LOW = '#ff8b00'
+COLOR_HIGH = '#ff1e00'
+COLOR_OK = '#00b454'
 COLOR_NORMAL = 'black'
 
 # = percentage of the whole height

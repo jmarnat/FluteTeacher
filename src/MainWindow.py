@@ -6,13 +6,23 @@ from src.Staff import Staff
 from src.ScaleManager import ScaleManager
 from src.Arpeggiator import Arpeggiator
 from src.Alteration import Alterations
-from src.Fingering import Fingering
+from src.Fingering import Fingering, FingeringError
 
 
 class MenuBar(QMenuBar):
     def __init__(self, parent, flute_teacher):
         super(MenuBar, self).__init__(parent)
         self._ft = flute_teacher
+        self._parent = parent
+
+        # DEFAULT MENUS VALUES
+        self._scale_name = 'Major'
+        self._scale_mode = 1
+        self._arp_noct = 1
+        self._arp_kind = Arpeggiator.UP
+        self._base_note_letter = 'C'
+        self._base_note_alteration = Alterations.NATURAL
+        self._start_from_oct = 4
 
         # --------------------------------------------- SCALES AND MODES --------------------------------------------- #
         self._menu_scales = self.addMenu('Scales and Modes')
@@ -25,7 +35,7 @@ class MenuBar(QMenuBar):
                     _qaction = QAction(mode_name)
                     _qaction.triggered.connect(partial(self.set_training_scale, scale_name, mode_deg))
                     _qaction.setCheckable(True)
-                    if (scale_name, mode_deg) == ('Major', 1):
+                    if (scale_name, mode_deg) == (self._scale_name, self._scale_mode):
                         _qaction.setChecked(True)
                     menu_modes.addAction(_qaction)
                     self._menu_scales_qactions[(scale_name, mode_deg)] = _qaction
@@ -111,34 +121,52 @@ class MenuBar(QMenuBar):
             self._menu_fingerings_actions[(Fingering.DISPLAY_DELAY, d)] = _qaction_fgr_delay
 
     def set_training_scale(self, scale_name, mode):
-        self._ft.set_scale(scale_name, mode)
+        try:
+            self._ft.set_scale(scale_name, mode)
+            (self._scale_name, self._scale_mode) = (scale_name, mode)
+        except FingeringError:
+            self.display_fingering_warning()
+
         for (_scale_name, _scale_deg), _qaction in self._menu_scales_qactions.items():
-            if (_scale_name, _scale_deg) == (scale_name, mode):
+            if (_scale_name, _scale_deg) == (self._scale_name, self._scale_mode):
                 _qaction.setChecked(True)
             else:
                 _qaction.setChecked(False)
 
     def set_training_base_note(self, note_letter, alteration):
-        self._ft.set_base_note(note_letter, alteration)
-        # _menu_start_from_basenote_qactions[(_alt, _letter)]
+        try:
+            self._ft.set_base_note(note_letter, alteration)
+            (self._base_note_letter, self._base_note_alteration) = (note_letter, alteration)
+        except FingeringError:
+            self.display_fingering_warning()
+
         for (_letter, _alt), _qaction in self._menu_start_from_basenote_qactions.items():
-            if (_letter, _alt) == (note_letter, alteration):
+            if (_letter, _alt) == (self._base_note_letter, self._base_note_alteration):
                 _qaction.setChecked(True)
             else:
                 _qaction.setChecked(False)
 
     def set_training_octave(self, octave):
-        self._ft.set_start_octave(octave)
+        try:
+            self._ft.set_start_octave(octave)
+            self._start_from_oct = octave
+        except FingeringError:
+            self.display_fingering_warning()
+
         for _oct, _qaction in self._menu_start_from_oct_qactions.items():
-            if _oct == octave:
+            if _oct == self._start_from_oct:
                 _qaction.setChecked(True)
             else:
                 _qaction.setChecked(False)
 
     def set_arpeggiator(self, kind, n_octaves):
-        self._ft.set_arpeggiator(kind, n_octaves)
+        try:
+            self._ft.set_arpeggiator(kind, n_octaves)
+            (self._arp_kind, self._arp_noct) = (kind, n_octaves)
+        except FingeringError:
+            self.display_fingering_warning()
         for (_arp_kind, _noct), _qaction in self._menu_arps_actions.items():
-            if (_arp_kind, _noct) == (kind, n_octaves):
+            if (_arp_kind, _noct) == (self._arp_kind, self._arp_noct):
                 _qaction.setChecked(True)
             else:
                 _qaction.setChecked(False)
@@ -150,6 +178,13 @@ class MenuBar(QMenuBar):
                 _qaction.setChecked(True)
             else:
                 _qaction.setChecked(False)
+
+    def display_fingering_warning(self):
+        msg_box = QMessageBox()
+        msg_box.setText("Selected setting contains unregistered (not playable) fingerings!")
+        msg_box.setWindowTitle("Error")
+        msg_box.setIcon(QMessageBox.Warning)
+        msg_box.exec_()
 
 
 class MainWindow(QMainWindow):
