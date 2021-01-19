@@ -174,3 +174,8 @@ class FluteTeacher:
 
     def set_fingering_delay_color(self, color):
         self.fingering.set_fingering_delay_color(color)
+
+    def quit(self):
+        print('FluteTeacher: closing MainWindow')
+        self._main_window.close()
+        print('FluteTeacher says babye.')

@@ -1,0 +1,145 @@
+<h1>About FluteTeacher</h1>
+
+Please visit <a href="http://www.josselinmarnat.com">www.josselinmarnat.com</a>
+
+<h2 id="version-history">Version History:</h2>
+<h3 id="v0.7">v0.7</h3>
+<ul>
+<li>Default Settings (in class, see later for a configuration file maybe):
+<ul>
+<li>Take Settings Class’s values in account in the MenuBar</li>
+</ul></li>
+<li>General GUI:
+<ul>
+<li>When selecting scale / octave / arp in the MenuBar, display warning if not playable → this was finally pretty complex!</li>
+<li>Added CSS on for buttons + hovers, pretty nice!</li>
+<li>Added colors selection for fingerings, including:
+<ul>
+<li>key pressed: black or blue,</li>
+<li>delayed keys: grays or rainbow yeah.</li>
+</ul></li>
+</ul></li>
+</ul>
+<h3 id="v0.6">v0.6</h3>
+<ul>
+<li>Fingering:
+<ul>
+<li>Treating multiple fingering possibilities</li>
+<li>add color for optional fingers</li>
+<li>show 2 fingerings delays when appropriate</li>
+<li>when no fingering: show grayed</li>
+</ul></li>
+<li>Staffs:
+<ul>
+<li>Added white background + rounded corners</li>
+</ul></li>
+<li>Arpeggiator:
+<ul>
+<li>Thirds Up/Down</li>
+</ul></li>
+</ul>
+<h3 id="v0.5">v0.5</h3>
+<ul>
+<li>Starting note and octave:
+<ul>
+<li>Changed to <code>Start from note</code> -&gt; <code>Octave</code> -&gt; <code>Note</code></li>
+</ul></li>
+<li>Scale and Modes:
+<ul>
+<li>Modes available only from Major, Minor harmonic and Minor melodic scales</li>
+<li>MenuBar integration -&gt; look alright</li>
+<li>added harmonic-minor scales</li>
+<li>added melodic-minor scales</li>
+<li>added pentatonics</li>
+</ul></li>
+<li>Arpeggiator:
+<ul>
+<li>Treating random as random choice over current scale</li>
+</ul></li>
+</ul>
+<h3 id="v0.4">v0.4:</h3>
+<ul>
+<li>Scales:
+<ul>
+<li>Whole-tone scale + mode</li>
+<li>Splitting ScaleManager and Arpeggiator processes</li>
+</ul></li>
+<li>Staffs:
+<ul>
+<li>Removed Blinking causing bugs -&gt; single green note now</li>
+</ul></li>
+<li>Arpeggiator:
+<ul>
+<li>For each: add 1 oct / 2 oct</li>
+<li>Added “start at octave no 4/5/6” menu</li>
+</ul></li>
+<li>Menubar:
+<ul>
+<li>add Arpeggiators</li>
+<li>check current scale / octave / arp</li>
+<li>training mode selection</li>
+<li>Random note from scale (deleting difficulty ’cause choosing scale)</li>
+</ul></li>
+<li>Fingerings:
+<ul>
+<li>add following options :
+<ul>
+<li>constant help</li>
+<li>fingering (after X secs)</li>
+<li>disabled</li>
+</ul></li>
+</ul></li>
+<li>General GUI:
+<ul>
+<li>buttons: set fixed height + change look?</li>
+</ul></li>
+</ul>
+<h3 id="v0.3">v0.3:</h3>
+<ul>
+<li>Scales:
+<ul>
+<li>True scale generator (with intervals)</li>
+<li>Adding minor scales</li>
+<li>Mode computing</li>
+<li>computed: Major / Minor</li>
+</ul></li>
+<li>MenuBar:
+<ul>
+<li>Empty menu bar</li>
+</ul></li>
+</ul>
+<h3 id="v0.2">v0.2:</h3>
+<ul>
+<li>Internal (“hard coded”) options:
+<ul>
+<li>add “practice mode” selection</li>
+<li>change “normal mode” to “random notes”</li>
+<li>add “scale and modes practice” :</li>
+</ul></li>
+</ul>
+<h3 id="v0.1">v0.1:</h3>
+<ul>
+<li>GUI:
+<ul>
+<li>Main window creation with 3 rows</li>
+<li><code>next</code> (note) button</li>
+<li>upper-left staff draw</li>
+<li>upper-left note respondive draw</li>
+<li>upper right basic draw</li>
+<li>fingering draw</li>
+</ul></li>
+<li>Notes:
+<ul>
+<li>note correspondance between text / drawn / A4-indexed</li>
+<li>add sharp and flat symbols</li>
+<li>corresp note number -&gt; correct true note</li>
+</ul></li>
+<li>HearAI (note recognition module):
+<ul>
+<li>note recognition based on FFT →</li>
+<li>HearAI: continuous listening</li>
+<li>on HearAI: no note if SNR &lt; threshold → set with volume only</li>
+<li>recognized note display</li>
+<li>automatic note validation</li>
+</ul></li>
+</ul>

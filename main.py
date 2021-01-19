@@ -1,5 +1,4 @@
 from PyQt5.QtWidgets import QApplication
-from PyQt5.QtCore import *
 import sys
 from src.FluteTeacher import FluteTeacher
 from src.Settings import *

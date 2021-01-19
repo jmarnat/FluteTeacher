@@ -1,5 +1,6 @@
-from PyQt5.QtWidgets import *
 from functools import partial
+
+from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt
 
 from src.Staff import Staff
@@ -98,7 +99,6 @@ class MenuBar(QMenuBar):
                 self._menu_arps.addSeparator()
 
         # ------------------------------------------------ FINGERINGS ------------------------------------------------ #
-
         self._menu_fingerings = self.addMenu('Fingerings')
         self._menu_fingerings_actions = {}
 
@@ -147,6 +147,12 @@ class MenuBar(QMenuBar):
             _qa.triggered.connect(partial(self.set_delay_color, color_code))
             self._menu_delay_colors.addAction(_qa)
             self._menu_delay_colors_qactions[color_code] = _qa
+
+        self._menu_help = self.addMenu('Help')
+        # !!! We need the " &" because "About" is a reserved word !!!
+        _qaaction_about = QAction(" &About FluteTeacher", self._menu_help)
+        _qaaction_about.triggered.connect(partial(self.show_about))
+        self._menu_help.addAction(_qaaction_about)
 
     def set_training_scale(self, scale_name, mode):
         try:
@@ -229,6 +235,34 @@ class MenuBar(QMenuBar):
                 _qaction.setChecked(True)
             else:
                 _qaction.setChecked(False)
+
+    def show_about(self):
+        about_text = ""
+        with open('res/html/about_en.html') as fin:
+            about_text = "\n".join(fin.readlines())
+        print(about_text)
+
+        about_window = QDialog()
+        # about_window.setFixedWidth(500)
+        about_layout = QVBoxLayout()
+        # about_layout.addStretch(1)
+        # about_layout.setSpacing(0)
+        about_layout.setContentsMargins(0, 0, 0, 0)
+
+        about_window.setLayout(about_layout)
+
+        content = QLabel()
+        content.setText(about_text)
+        content.setFixedWidth(500)
+        content.setStyleSheet("background: #123456; color: white; padding: 30px;")
+        q_scroll = QScrollArea()
+        q_scroll.setWidget(content)
+        q_scroll.setMinimumWidth(500)
+
+        about_layout.addWidget(q_scroll)
+
+        about_window.setWindowTitle('About FluteTeacher')
+        about_window.exec_()
 
 
 class MainWindow(QMainWindow):
