@@ -9,6 +9,7 @@ class Arpeggiator:
     THIRDS_UP = 4
     THIRDS_DOWN = 5
     THIRDS_UP_DOWN = 6
+    DOREMIDO = 7
 
     def __init__(self, scale_manager, kind=UP, n_octaves=1):
         self._notes = []
@@ -52,6 +53,8 @@ class Arpeggiator:
             self._init_mode_thirds_up_down()
         elif self._kind == Arpeggiator.RANDOM:
             self._init_mode_random()
+        elif self._kind == Arpeggiator.DOREMIDO:
+            self._init_mode_doremido()
         else:
             print('WARNING: ArpeggiatorV2: no mode {}'.format(self._kind))
             self._init_mode_up()
@@ -108,6 +111,20 @@ class Arpeggiator:
         self._notes = _scale_up[:-1] + _scale_down
         return self._notes
 
+    def _init_mode_doremido(self):
+        _scale_up_1 = self._init_mode_up()[:-1]
+        _scale_up_2 = _scale_up_1[1:] + [_scale_up_1[0].get_8va(self._noct)]
+        _scale_up_3 = _scale_up_2[1:] + [_scale_up_2[0].get_8va(self._noct)]
+        _scale_up_4 = _scale_up_1
+        self._notes = []
+        for (_n1, _n2, _n3, _n4) in zip(_scale_up_1, _scale_up_2, _scale_up_3, _scale_up_4):
+            self._notes.append(_n1)
+            self._notes.append(_n2)
+            self._notes.append(_n3)
+            self._notes.append(_n4)
+        self._notes.append(_scale_up_1[0].get_8va(self._noct))
+        return self._notes
+
     def _init_mode_random(self):
         self._init_mode_up()
         self._notes = permutation(self._notes)
@@ -124,6 +141,7 @@ class Arpeggiator:
             Arpeggiator.THIRDS_UP: "Thirds up",
             Arpeggiator.THIRDS_DOWN: "Thirds down",
             Arpeggiator.THIRDS_UP_DOWN: "Thirds up/down",
+            Arpeggiator.DOREMIDO: "Do ré mi do, ré mi fa ré, ...",
             Arpeggiator.RANDOM: "Random"
         }
 

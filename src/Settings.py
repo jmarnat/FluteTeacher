@@ -4,7 +4,7 @@ from src.Alteration import *
 
 class Settings:
     # ------------------ LISTENING AND AUTONEXT AT STARTUP ------------------- #
-    START_LISTENING_AT_STARTUP = False
+    START_LISTENING_AT_STARTUP = True
     START_AUTONEXT_AT_STARTUP = False
 
     # ---------------------------- DEFAULT SCALE ----------------------------- #

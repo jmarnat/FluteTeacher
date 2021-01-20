@@ -6,9 +6,7 @@ So I made this app in order to properly learn a bunch of fingerings before tryin
 
 Also, this was quite (and still is) an interesting coding challenge.
 
-Developped in Python. Of course.
-
-Please visit [www.josselinmarnat.com](http://www.josselinmarnat.com) for other apps, music, and woodwooking stuff.
+Please visit [www.josselinmarnat.com](http://www.josselinmarnat.com) for other apps, music, and woodwooking stuff.  The whole source code is available on my [github](https://github.com/jmarnat/FluteTeacher). Developped in Python. Of course.
 
 ---
 
