@@ -6,8 +6,14 @@ Here is an animated GIF of the actual version running:
 
 ## To-do list (by decreasing priority):
 ### Staffs:
-- [ ] add view choices : single / continuous
-  - [ ] add corresponding GUI option
+- [x] Added training mode : Single Note / Sheet Music
+  - [x] Arpeggiator adapted to this
+  - [x] add corresponding GUI option
+  - [ ] Make quarter notes
+  - [ ] Warning + confirmation popup when changing mode
+- [ ] in SheetMusic mode: add heard note color (orange / red) + validation (green)
+  -> draw the true note behind the wanted one??
+
 ### Timer:
 - [ ] Add a practicing timer??
 ### Help popup:

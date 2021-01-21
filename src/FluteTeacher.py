@@ -62,6 +62,11 @@ class FluteTeacher:
     def get_training_mode(self):
         return self._training_mode
 
+    def set_training_mode(self, mode):
+        self._training_mode = mode
+        self._arpeggiator.reset()
+        self.first_note()
+
     def is_autonext(self):
         return self._autonext
 
@@ -117,6 +122,8 @@ class FluteTeacher:
         :param validate:
         :return:
         """
+
+        print('FluteTeacher.next_note() - MODE: {}'.format(self._training_mode))
 
         if self._training_mode == 'SingleNote':
             if VALIDATE_NOTE and validate and (self._current_note is not None):

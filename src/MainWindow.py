@@ -182,6 +182,7 @@ class MenuBar(QMenuBar):
                 _qaction.setChecked(True)
             else:
                 _qaction.setChecked(False)
+        self._parent.set_training_mode(training_mode)
 
     def set_training_scale(self, scale_name, mode):
         try:
@@ -322,15 +323,18 @@ class MainWindow(QMainWindow):
         self._right_staff = None
         self._sheet_music = None
 
-        if self._ft.get_training_mode() == 'SingleNote':
-            self._left_staff = Staff(kind='SingleNote')
-            self._top_row_layout.addWidget(self._left_staff)
+        self._left_staff = Staff(kind='SingleNote')
+        self._top_row_layout.addWidget(self._left_staff)
+        self._right_staff = Staff(kind='SingleNote')
+        self._top_row_layout.addWidget(self._right_staff)
+        self._sheet_music = Staff(kind='SheetMusic')
+        self._top_row_layout.addWidget(self._sheet_music)
 
-            self._right_staff = Staff(kind='SingleNote')
-            self._top_row_layout.addWidget(self._right_staff)
+        if self._ft.get_training_mode() == 'SingleNote':
+            self._sheet_music.setVisible(False)
         elif self._ft.get_training_mode() == 'SheetMusic':
-            self._sheet_music = Staff(kind='SheetMusic')
-            self._top_row_layout.addWidget(self._sheet_music)
+            self._left_staff.setVisible(False)
+            self._right_staff.setVisible(False)
         else:
             print('ERROR: no training mode named "{}"'.format(self._training_mode))
 
@@ -374,7 +378,6 @@ class MainWindow(QMainWindow):
         self._ww_layout.addWidget(self._bottom_row)
 
         self.setCentralWidget(self._ww)
-
 
         self.show()
 
@@ -454,3 +457,15 @@ class MainWindow(QMainWindow):
             self._right_staff.erase_note()
         else:
             print('ERROR: unknown staff "{}"'.format(staff))
+
+    def set_training_mode(self, training_mode):
+        if training_mode == 'SingleNote':
+            self._left_staff.setVisible(True)
+            self._right_staff.setVisible(True)
+            self._sheet_music.setVisible(False)
+        elif training_mode == 'SheetMusic':
+            self._left_staff.setVisible(False)
+            self._right_staff.setVisible(False)
+            self._sheet_music.setVisible(True)
+
+        self._ft.set_training_mode(training_mode)
