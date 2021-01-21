@@ -4,7 +4,7 @@ import numpy as np
 from scipy.fft import fft
 
 from src.NotesAndRests import Note
-
+from src.Settings import Settings
 
 class HearAI:
     def __init__(self,
@@ -107,9 +107,16 @@ class HearAI:
         if note_a4_index is None:
             return None
 
+        # Transposing the input (debug by male voice)
+        note_a4_index += Settings.TRANSPOSE_INPUT
+
         found_note = Note.from_a440(note_a4_index, str(alteration))
-        print('Hearing:', found_note.to_str())
-        return found_note
+        if found_note is not None:
+            # print('Hearing:', found_note.to_str())
+
+            return found_note
+
+        return None
 
     def close(self):
         self._stream.close()

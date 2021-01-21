@@ -10,10 +10,17 @@ class Bar:
         """
         self._nbeats = beats_number
         self._beat_unit = beat_unit
+        self._pos_frac = 0
         if notes_and_rests:
             self._notes_and_rests = notes_and_rests
         else:
             self._notes_and_rests = []
+
+    def set_cursor(self, pos_frac):
+        self._pos_frac = pos_frac
+
+    def get_cursor(self):
+        return self._pos_frac
 
     def check_bar(self):
         return int(self._nbeats * self._beat_unit) == sum([n.length() for n in self._notes_and_rests])

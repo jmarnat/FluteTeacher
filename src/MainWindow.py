@@ -375,11 +375,16 @@ class MainWindow(QMainWindow):
 
         self.setCentralWidget(self._ww)
 
+
         self.show()
 
-    def quit(self):
-        print('bye bye')
-        exit(0)
+    def closeEvent(self, a0):
+        self._ft.terminate()
+        print('closing main window')
+
+    # def quit(self):
+    #     print('bye bye')
+    #     exit(0)
 
     def toggle_autonext(self):
         if self._ft.is_autonext():
@@ -410,6 +415,22 @@ class MainWindow(QMainWindow):
         # for inote, note_or_rest in enumerate(notes_and_rests):
         #     self._sheet_music.display_note(note, xpos=xpos)
         #     xpos +=
+    #
+    # def set_bar_cursor(self, bar_fraction):
+
+    def display_heard_note(self, note, ndec):
+        if self._ft.get_training_mode() == 'SingleNote':
+            self.display_note('right', note, ndec)
+        else:
+            # TODO
+            pass
+
+    def erase_heard_note(self):
+        if self._ft.get_training_mode() == 'SingleNote':
+            self._right_staff.erase_note('right')
+        else:
+            # TODO
+            pass
 
     def display_note(self, staff, note, ndec=None):
         """

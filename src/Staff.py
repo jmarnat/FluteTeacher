@@ -26,7 +26,7 @@ class Staff(QWidget):
 
         self._time_signature = (None, None)
         # self._current_bar = 0
-        self._current_pos = Fraction(0, 1)
+        self._current_pos = None
 
         self.qimages = {
             'sharp': QImage('res/sharp.png'),
@@ -34,6 +34,8 @@ class Staff(QWidget):
             'g-clef': QImage('res/g-clef.png'),
             'double-sharp': QImage('res/double-sharp.png'),
             'double-flat': QImage('res/double-flat.png'),
+            # 'cursor': QImage('res/cursor-triangle.png')
+            'cursor': QImage('res/cursor-triangle.png')
         }
 
     def il(self):
@@ -43,12 +45,12 @@ class Staff(QWidget):
     def display_bar(self, bar):
         self._time_signature = bar.get_time_signature()
         self.notes_and_rests = bar.get_notes_and_rests()
-        self._current_pos = 0
+        self._current_pos = float(bar.get_cursor())
         self.update()
 
-    def set_bar_pos(self, pos_frac):
-        self._current_pos = pos_frac
-        self.update()
+    # def set_bar_pos(self, pos_frac):
+    #     self._current_pos = pos_frac
+    #     self.update()
 
     def display_note(self, note, ndec=None, update=True):
         self.notes_and_rests = [note]
@@ -67,6 +69,9 @@ class Staff(QWidget):
         qp.begin(self)
         self._paint_staff_and_clef(qp)
         self._paint_notes(qp)
+
+        if self._current_pos is not None:
+            self._paint_cursor(qp)
         qp.end()
 
     def _paint_staff_and_clef(self, qp):
@@ -92,17 +97,15 @@ class Staff(QWidget):
     def _get_xlims(self):
         clef_h = int(self.il() * 8)
         clef_w = int(clef_h * (self.qimages['g-clef'].width() / self.qimages['g-clef'].height()))
-        _xmin = int(clef_w + 10 + 10)
+        _xmin = int(clef_w + 10 + 40)
         _xmax = int(self.width() - 20)
         return _xmin, _xmax
 
     def _paint_notes(self, qp):
         # 'SingleNote' display mode
         if self._time_signature == (None, None):
-            if len(self.notes_and_rests) != 1:
-                print('ERROR: Staff._paint_notes() | len(notes and rests) != 1')
-                return
-            self._paint_note(qp, note=self.notes_and_rests[0], xpos=0.5)
+            if len(self.notes_and_rests) == 1:
+                self._paint_note(qp, note=self.notes_and_rests[0], xpos=0.5)
 
         # 'SheetMusic' display mode
         else:
@@ -139,6 +142,13 @@ class Staff(QWidget):
 
         return QColor(COLOR_NORMAL)
 
+    def _note_width(self):
+        return 1.25 * self.il()
+
+    def _note_cx_pos(self, xpos):
+        _xmin, _xmax = self._get_xlims()
+        return int(_xmin + xpos * (_xmax - _xmin) + self._note_width() / 2)
+
     def _paint_note(self, qp, note, xpos=0.5):
         """
 
@@ -152,9 +162,8 @@ class Staff(QWidget):
         w = self.width()
         _vcenter = int(0.6 * self.height())
         # note_center_xpos = int(xpos * w - (1.25 * lh / 2))
-        _xmin, _xmax = self._get_xlims()
-        note_width = (1.25 * lh)
-        note_center_xpos = int(_xmin + xpos * (_xmax - _xmin) + note_width / 2)
+        note_width = self._note_width()
+        note_center_xpos = self._note_cx_pos(xpos)
         note_center_ypos = int(_vcenter - (note.b_index * lh/2) - (lh/2))
         note_color = self._note_color()
 
@@ -223,3 +232,10 @@ class Staff(QWidget):
             flat_xpos = int(note_center_xpos - flat_w - 5)
             flat_ypos = int(_vcenter - (note.b_index * lh / 2) - (flat_h * 0.75))
             qp.drawImage(QRect(flat_xpos, flat_ypos, flat_w, flat_h), self.qimages['double-flat'])
+
+    def _paint_cursor(self, qp):
+        cursor_h = int(1 * self.il())
+        cursor_w = int(cursor_h * (self.qimages['cursor'].width() / self.qimages['cursor'].height()))
+        cursor_xpos = self._note_cx_pos(float(self._current_pos))
+        cursor_ypos = int(self.height() - cursor_h - 10)
+        qp.drawImage(QRect(cursor_xpos, cursor_ypos, cursor_w, cursor_h), self.qimages['cursor'])

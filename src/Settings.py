@@ -4,8 +4,8 @@ from src.Alteration import *
 
 class Settings:
     # Starting mode, either 'SheetMusic' or 'SingleNote'
-    START_IN_MODE = 'SheetMusic'
-    # START_IN_MODE = 'SingleNote'
+    # START_IN_MODE = 'SheetMusic'
+    START_IN_MODE = 'SingleNote'
 
     # ------------------ LISTENING AND AUTONEXT AT STARTUP ------------------- #
     START_LISTENING_AT_STARTUP = False
@@ -26,6 +26,9 @@ class Settings:
 
     # -------------------------- FINGERING SETTINGS -------------------------- #
     FINGERINGS_DELAYS = [0.5, 1, 2, 3, 4, 5, 10]
+
+    #
+    TRANSPOSE_INPUT = 0
 
     # ----------------------------- MAIN APP CSS ----------------------------- #
     MAIN_APP_STYLE_SHEET = """

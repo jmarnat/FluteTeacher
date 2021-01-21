@@ -5,6 +5,7 @@ from src.Bar import Bar
 from src.NotesAndRests import Note
 from src.TimeSignature import TimeSignatures
 
+
 class Arpeggiator:
     RANDOM = 0
     UP = 1
@@ -30,6 +31,11 @@ class Arpeggiator:
         self._is_end_of_bar = False
 
         self._init_mode()
+
+    def copy(self):
+        return Arpeggiator(scale_manager=self._scale_manager,
+                           kind=self._kind,
+                           n_octaves=self._noct)
 
     def set_scale_manager(self, scale_mgr):
         self._scale_manager = scale_mgr
@@ -173,6 +179,19 @@ class Arpeggiator:
         _noct_dict = Arpeggiator.noct_dict()
         return _mode_dict[self._kind] + " - " + _noct_dict[self._noct]
 
+    # def pick_pos_and_note(self):
+    #     current_note = self._notes[self._pos]
+    #     current_pos = self._pos
+    #     self.pick_note()
+    #     return current_pos, current_note
+
+    def reset(self):
+        self._pos = 0
+        self._bar_pos = 0
+        self._isdone = False
+        self._is_end_of_bar = False
+        self._init_mode()
+
     def pick_note(self):
         """
         picks the current note, and prepare the next one.
@@ -202,10 +221,6 @@ class Arpeggiator:
 
     def is_end_of_bar(self):
         return self._is_end_of_bar
-        # nbeats = self._time_signature.get_nbeats()
-        # _pos_min = self._pos // nbeats
-        # _pos_max = min(len(self._notes), _pos_min + nbeats)
-        # return self._pos >= _pos_max - 1
 
     def get_current_bar(self, length=4):
         """
@@ -219,28 +234,7 @@ class Arpeggiator:
         for note in self._notes[_pos_min:_pos_max]:
             note.set_length(Note.QUARTER_NOTE)
             bar.add_note(note)
-            # __n = self.pick_note()
-            # print('pick_bar, note = {}'.format(__n))
         return bar
-
-        # if self._pos < (len(self._notes) - self._bar_beats):
-        #     for i in range(self._bar_beats):
-        #         bar.add_note(self._notes[self._pos])
-        #         self._pos += 1
-        # else:
-        #     # TODO
-        #     print('Apreggiator.pick_bar: not enough notes')
-
-    def advance(self, steps=4):
-        print('Arpeggiator, advancing 4')
-        self._pos += steps
-        if self._pos >= (len(self._notes)-1):
-            self_pos = 0
-        # else:
-        #     self._pos = 0
-
-    def get_pos(self):
-        return self._pos
 
     def get_notes(self):
         return self._notes

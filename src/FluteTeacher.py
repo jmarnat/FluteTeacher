@@ -26,6 +26,9 @@ class FluteTeacher:
         self._bar = None
         self._current_bar_pos = 0
 
+        # Used for terminating running threads when quitting
+        self.__terminate__ = False
+
         # MAIN WINDOW
         self._main_window = MainWindow(flute_teacher=self)
 
@@ -41,10 +44,10 @@ class FluteTeacher:
                                         n_octaves=Settings.DEFAULT_ARP_N_OCTAVES)
 
         if self._training_mode == 'SingleNote':
-            self.next_note()
+            self.first_note()
         elif self._training_mode == 'SheetMusic':
-            self.next_bar(first=True)
-            self.next_note()
+            # self.next_bar(first=True)
+            self.first_note()
 
         # NOTE RECOGNITION
         self._hear_ai = HearAI()
@@ -52,6 +55,9 @@ class FluteTeacher:
             self.set_autonext(True)
         if self._listening:
             self.start_listening()
+
+    def terminate(self):
+        self.__terminate__ = True
 
     def get_training_mode(self):
         return self._training_mode
@@ -66,10 +72,14 @@ class FluteTeacher:
         self._autonext = val
 
     def hearing_loop(self):
-        while self._listening:
+        while self._listening and not self.__terminate__:
             dec = self.hear_sample()
+            if self.__terminate__:
+                return
             if self._autonext and (dec is not None) and (dec == 0):
                 self.next_note(validate=True)
+        if self.__terminate__:
+            print('FluteTeacher: terminating hearing loop!')
 
     def start_listening(self):
         print('FT: start listening')
@@ -88,6 +98,19 @@ class FluteTeacher:
         self._main_window.erase_note(staff='left')
         self._main_window.erase_note(staff='right')
 
+    def first_note(self):
+        self._current_bar_pos = 0
+        self._bar = self._arpeggiator.get_current_bar(length=4)
+        self._current_note = self._arpeggiator.pick_note()
+
+        if self._training_mode == 'SingleNote':
+            self._main_window.display_note(staff='left', note=self._current_note)
+        elif self._training_mode == 'SheetMusic':
+            self._bar.set_cursor(self._current_bar_pos)
+            self._main_window.display_bar(self._bar)
+
+        self._main_window.fingering.set_fingering(self._current_note)
+
     def next_note(self, validate=False):
         """
         Should be used on training mode 'SingleNote' ONLY
@@ -101,11 +124,26 @@ class FluteTeacher:
             self._current_note = self._arpeggiator.pick_note()
             self._main_window.display_note(staff='left', note=self._current_note)
             self._main_window.fingering.set_fingering(self._current_note)
+
         elif self._training_mode == 'SheetMusic':
-            if self._arpeggiator.is_end_of_bar():
-                self.next_bar()
+            if self._arpeggiator.is_done():
+                self._arpeggiator.reset()
+                self._bar = self._arpeggiator.get_current_bar(length=4)
+                self._current_bar_pos = 0
+
+            else:
+                if self._arpeggiator.is_end_of_bar():
+                    self._bar = self._arpeggiator.get_current_bar(length=4)
+                    self._current_bar_pos = 0
+                else:
+                    self._current_bar_pos += self._current_note.length
 
             self._current_note = self._arpeggiator.pick_note()
+            self._bar.set_cursor(self._current_bar_pos)
+            self._main_window.display_bar(self._bar)
+
+            # self._arpeggiator.tim
+            # ++ self._main_window.set_bar_cursor(self._current_bar_pos/self.)
 
             # if VALIDATE_NOTE and validate and (self._current_note is not None):
             #     self.validate_notes_gui()
@@ -115,21 +153,22 @@ class FluteTeacher:
             # self._main_window.display_note(staff='left', note=self._current_note)
             self._main_window.fingering.set_fingering(self._current_note)
 
-    def next_bar(self, first=False):
-        """
-        Should be used on training mode 'SheetMusic' ONLY
-        :return:
-        """
-        print('FluteTeacher: Next Bar!')
-        # if not first:
-        #     self._arpeggiator.advance(4)
-        self._bar = self._arpeggiator.get_current_bar(length=4)
-
-        # self.next_note()
-        # self._current_bar_pos = 0
-        # self._current_note = self._arpeggiator.pick_note()
-        # self._current_bar_pos = self._current_bar_pos
-        self._main_window.display_bar(self._bar)
+    # def next_bar(self, first=False):
+    #     """
+    #     Should be used on training mode 'SheetMusic' ONLY
+    #     :return:
+    #     """
+    #     print('FluteTeacher: Next Bar!')
+    #     # if not first:
+    #     #     self._arpeggiator.advance(4)
+    #     self._bar = self._arpeggiator.get_current_bar(length=4)
+    #
+    #     # self.next_note()
+    #     # self._current_bar_pos = 0
+    #     if first:
+    #         self._current_note = self._arpeggiator.pick_note()
+    #         self._current_bar_pos = 0
+    #     self._main_window.display_bar(self._bar)
 
     def hear_sample(self):
         self._hear_ai.record(millis=200)
@@ -139,10 +178,13 @@ class FluteTeacher:
             self._heard_note = heard_note
             dec = heard_note.midi_code - self._current_note.midi_code
             print('head note: {}'.format(heard_note))
-            self._main_window.display_note(staff='right', note=heard_note, ndec=dec)
+            if self.__terminate__:
+                return None
+            self._main_window.display_heard_note(note=heard_note, ndec=dec)
             return dec
 
-        self._main_window.erase_note(staff='right')
+        if not self.__terminate__:
+            self._main_window.erase_heard_note()
         return None
 
     # def check_playability(self):
@@ -158,13 +200,13 @@ class FluteTeacher:
     def set_scale(self, scale_name, mode):
         _scale_mgr_tmp = copy(self._scale_manager)
         _scale_mgr_tmp.set_scale(scale_name, mode)
-        _arpeggiator_tmp = copy(self._arpeggiator)
+        _arpeggiator_tmp = self._arpeggiator.copy()
         _arpeggiator_tmp.set_scale_manager(_scale_mgr_tmp)
 
         if Fingerings.check_notes(_arpeggiator_tmp.get_notes()):
             self._scale_manager = _scale_mgr_tmp
             self._arpeggiator = _arpeggiator_tmp
-            self.next_note()
+            self.first_note()
         else:
             print('FluteTeacher.set_scale() -> FingeringError')
             raise FingeringError
@@ -172,13 +214,13 @@ class FluteTeacher:
     def set_base_note(self, letter, alteration):
         _scale_mgr_tmp = copy(self._scale_manager)
         _scale_mgr_tmp.set_basenote(letter, alteration)
-        _arpeggiator_tmp = copy(self._arpeggiator)
+        _arpeggiator_tmp = self._arpeggiator.copy()
         _arpeggiator_tmp.set_scale_manager(_scale_mgr_tmp)
 
         if Fingerings.check_notes(_arpeggiator_tmp.get_notes()):
             self._scale_manager = _scale_mgr_tmp
             self._arpeggiator = _arpeggiator_tmp
-            self.next_note()
+            self.first_note()
         else:
             print('FluteTeacher.set_base_note() -> FingeringError')
             raise FingeringError
@@ -186,13 +228,13 @@ class FluteTeacher:
     def set_start_octave(self, start_octave=4):
         _scale_mgr_tmp = copy(self._scale_manager)
         _scale_mgr_tmp.set_octave(start_octave)
-        _arpeggiator_tmp = copy(self._arpeggiator)
+        _arpeggiator_tmp = self._arpeggiator.copy()
         _arpeggiator_tmp.set_scale_manager(_scale_mgr_tmp)
 
         if Fingerings.check_notes(_arpeggiator_tmp.get_notes()):
             self._scale_manager = _scale_mgr_tmp
             self._arpeggiator = _arpeggiator_tmp
-            self.next_note()
+            self.first_note()
         else:
             print('FluteTeacher.set_start_octave() -> FingeringError')
             raise FingeringError
@@ -202,7 +244,7 @@ class FluteTeacher:
 
         if Fingerings.check_notes(_arpeggiator_tmp.get_notes()):
             self._arpeggiator = _arpeggiator_tmp
-            self.next_note()
+            self.first_note()
         else:
             print('FluteTeacher.set_arpeggiator() -> FingeringError')
             raise FingeringError
@@ -211,10 +253,10 @@ class FluteTeacher:
         self._main_window.fingering.set_display_mode(mode, delay)
 
     def set_fingering_key_color(self, color):
-        self.fingering.set_fingering_key_color(color)
+        self._main_window.fingering.set_fingering_key_color(color)
 
     def set_fingering_delay_color(self, color):
-        self.fingering.set_fingering_delay_color(color)
+        self._main_window.fingering.set_fingering_delay_color(color)
 
     def quit(self):
         print('FluteTeacher: closing MainWindow')
