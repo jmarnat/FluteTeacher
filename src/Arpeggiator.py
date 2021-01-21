@@ -1,5 +1,9 @@
 from numpy.random import permutation
+from fractions import Fraction
 
+from src.Bar import Bar
+from src.NotesAndRests import Note
+from src.TimeSignature import TimeSignatures
 
 class Arpeggiator:
     RANDOM = 0
@@ -12,12 +16,18 @@ class Arpeggiator:
     DOREMIDO = 7
 
     def __init__(self, scale_manager, kind=UP, n_octaves=1):
-        self._notes = []
         self._scale_manager = scale_manager
         self._kind = kind
         self._noct = n_octaves
+
         self._pos = 0
+        self._bar_pos = 0
+        self._notes_per_bar = 4
+        self._notes = []
+        self._time_signature = TimeSignatures.TS_4_4
+
         self._isdone = False
+        self._is_end_of_bar = False
 
         self._init_mode()
 
@@ -144,6 +154,12 @@ class Arpeggiator:
             Arpeggiator.DOREMIDO: "Do ré mi do, ré mi fa ré, ...",
             Arpeggiator.RANDOM: "Random"
         }
+    #
+    # @staticmethod
+    # def arp_dict_v2():
+    #     return {
+    #         "Up (quarter notes)": (Arpeggiator.UP, )
+    #     }
 
     @staticmethod
     def noct_dict():
@@ -163,7 +179,15 @@ class Arpeggiator:
         :return: Note
         """
         current_note = self._notes[self._pos]
-        if self._pos == (len(self._notes) - 1):
+
+        if self._bar_pos >= (self._notes_per_bar-1):
+            self._is_end_of_bar = True
+            self._bar_pos = 0
+        else:
+            self._is_end_of_bar = False
+            self._bar_pos += 1
+
+        if self._pos >= (len(self._notes) - 1):
             self._isdone = True
             self._pos = 0
             # in the RANDOM case, change permutation each time.
@@ -172,7 +196,51 @@ class Arpeggiator:
         else:
             self._isdone = False
             self._pos += 1
+
+        print('Arpeggiator: picking note {}'.format(current_note))
         return current_note
+
+    def is_end_of_bar(self):
+        return self._is_end_of_bar
+        # nbeats = self._time_signature.get_nbeats()
+        # _pos_min = self._pos // nbeats
+        # _pos_max = min(len(self._notes), _pos_min + nbeats)
+        # return self._pos >= _pos_max - 1
+
+    def get_current_bar(self, length=4):
+        """
+        picks a current bar associated to the current settings
+        :return:
+        """
+        # TODO: return the needed number of notes, not always 4
+        bar = Bar(length, Note.QUARTER_NOTE)
+        _pos_min = self._pos
+        _pos_max = min(len(self._notes), _pos_min + length)
+        for note in self._notes[_pos_min:_pos_max]:
+            note.set_length(Note.QUARTER_NOTE)
+            bar.add_note(note)
+            # __n = self.pick_note()
+            # print('pick_bar, note = {}'.format(__n))
+        return bar
+
+        # if self._pos < (len(self._notes) - self._bar_beats):
+        #     for i in range(self._bar_beats):
+        #         bar.add_note(self._notes[self._pos])
+        #         self._pos += 1
+        # else:
+        #     # TODO
+        #     print('Apreggiator.pick_bar: not enough notes')
+
+    def advance(self, steps=4):
+        print('Arpeggiator, advancing 4')
+        self._pos += steps
+        if self._pos >= (len(self._notes)-1):
+            self_pos = 0
+        # else:
+        #     self._pos = 0
+
+    def get_pos(self):
+        return self._pos
 
     def get_notes(self):
         return self._notes

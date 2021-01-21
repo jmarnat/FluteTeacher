@@ -1,5 +1,5 @@
 from src.Intervals import Intervals
-from src.Note import Note
+from src.NotesAndRests import Note
 from copy import copy
 
 class ScaleManager:

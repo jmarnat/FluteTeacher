@@ -1,12 +1,14 @@
 import random
+from fractions import Fraction
 
 from src.Alteration import Alteration, Alterations
 
 
 class Rests:
-    QUARTER_REST = 4
-    HAFL_REST = 2
-    WHOLE_REST = 8
+    WHOLE_REST = Fraction(1, 1)
+    HALF_REST = Fraction(1, 2)
+    QUARTER_REST = Fraction(1, 4)
+    EIGHTH_REST = Fraction(1, 8)
 
 
 class Rest:
@@ -29,8 +31,10 @@ class Note:
     NOTE_DECAYS = {'C': 0, 'D': 2, 'E': 4, 'F': 5, 'G': 7, 'A': 9, 'B': 11}
     PURE_INTERVALS = {1: 0, 2: 2, 3: 4, 4: 5, 5: 7, 6: 9, 7: 11, 8: 12}
 
-    HALF_NOTE = 1/2
-    QUARTER_NOTE = 1/4
+    WHOLE_NOTE = Fraction(1, 1)
+    HALF_NOTE = Fraction(1, 2)
+    QUARTER_NOTE = Fraction(1, 4)
+    EIGHTH_NOTE = Fraction(1, 8)
 
     def __init__(self, letter='C', octave=4, alteration=Alterations.NATURAL, length=QUARTER_NOTE):
         """
@@ -48,6 +52,13 @@ class Note:
 
         # computing graph values (B-index = index from B = center line)
         self.b_index = ('CDEFGAB'.index(self.letter)) + (7 * (self.octave - 5)) + 1
+
+    def set_length(self, length):
+        """
+        Sets the length of the self = current note
+        :param length: Note.QUARTER_NOTE, Note.EIGTH_NOTE, ...
+        """
+        self.length = length
 
     def to_str(self):
         str(self)

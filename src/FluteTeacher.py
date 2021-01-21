@@ -2,7 +2,7 @@ import threading
 from time import sleep
 from copy import copy
 
-from src.Note import Note
+from src.NotesAndRests import Note
 from src.HearAI import HearAI
 from src.ScaleManager import ScaleManager
 from src.Arpeggiator import Arpeggiator
@@ -17,11 +17,14 @@ VALIDATE_TIME = 0.2
 
 class FluteTeacher:
     def __init__(self):
-        self._current_note = None
-        self._heard_note = None
         self._listening = Settings.START_LISTENING_AT_STARTUP
         self._autonext = Settings.START_AUTONEXT_AT_STARTUP
         self._training_mode = Settings.START_IN_MODE
+
+        self._current_note = None
+        self._heard_note = None
+        self._bar = None
+        self._current_bar_pos = 0
 
         # MAIN WINDOW
         self._main_window = MainWindow(flute_teacher=self)
@@ -36,7 +39,12 @@ class FluteTeacher:
         self._arpeggiator = Arpeggiator(self._scale_manager,
                                         kind=Settings.DEFAULT_ARPEGGIATOR_KIND,
                                         n_octaves=Settings.DEFAULT_ARP_N_OCTAVES)
-        self.next_note()
+
+        if self._training_mode == 'SingleNote':
+            self.next_note()
+        elif self._training_mode == 'SheetMusic':
+            self.next_bar(first=True)
+            self.next_note()
 
         # NOTE RECOGNITION
         self._hear_ai = HearAI()
@@ -81,17 +89,47 @@ class FluteTeacher:
         self._main_window.erase_note(staff='right')
 
     def next_note(self, validate=False):
-        if VALIDATE_NOTE and validate and (self._current_note is not None):
-            self.validate_notes_gui()
+        """
+        Should be used on training mode 'SingleNote' ONLY
+        :param validate:
+        :return:
+        """
 
-        self._current_note = self._arpeggiator.pick_note()
+        if self._training_mode == 'SingleNote':
+            if VALIDATE_NOTE and validate and (self._current_note is not None):
+                self.validate_notes_gui()
+            self._current_note = self._arpeggiator.pick_note()
+            self._main_window.display_note(staff='left', note=self._current_note)
+            self._main_window.fingering.set_fingering(self._current_note)
+        elif self._training_mode == 'SheetMusic':
+            if self._arpeggiator.is_end_of_bar():
+                self.next_bar()
 
-        if self._current_note is None:
-            print('ERROR: NEW NOTE IS NONE')
-            exit(0)
+            self._current_note = self._arpeggiator.pick_note()
 
-        self._main_window.display_note(staff='left', note=self._current_note)
-        self._main_window.fingering.set_fingering(self._current_note)
+            # if VALIDATE_NOTE and validate and (self._current_note is not None):
+            #     self.validate_notes_gui()
+            # else:
+            #     print('FT.next_note(): self._arpeggiator.pick_note()')
+            #     self._current_note = self._arpeggiator.pick_note()
+            # self._main_window.display_note(staff='left', note=self._current_note)
+            self._main_window.fingering.set_fingering(self._current_note)
+
+    def next_bar(self, first=False):
+        """
+        Should be used on training mode 'SheetMusic' ONLY
+        :return:
+        """
+        print('FluteTeacher: Next Bar!')
+        # if not first:
+        #     self._arpeggiator.advance(4)
+        self._bar = self._arpeggiator.get_current_bar(length=4)
+
+        # self.next_note()
+        # self._current_bar_pos = 0
+        # self._current_note = self._arpeggiator.pick_note()
+        # self._current_bar_pos = self._current_bar_pos
+        self._main_window.display_bar(self._bar)
 
     def hear_sample(self):
         self._hear_ai.record(millis=200)

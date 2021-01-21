@@ -3,7 +3,7 @@ import sys
 import numpy as np
 from scipy.fft import fft
 
-from src.Note import Note
+from src.NotesAndRests import Note
 
 
 class HearAI:

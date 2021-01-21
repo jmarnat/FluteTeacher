@@ -402,7 +402,23 @@ class MainWindow(QMainWindow):
             self._button_listening.setText('Stop listening')
             self._button_listening.setStyleSheet('font-weight: bold')
 
+    def display_bar(self, bar):
+        self._sheet_music.display_bar(bar)
+        # notes_and_rests = bar.get_notes_and_rests()
+        # xpos = 0
+        # self._sheet_music.set_time_signature(bar.get_time_signature())
+        # for inote, note_or_rest in enumerate(notes_and_rests):
+        #     self._sheet_music.display_note(note, xpos=xpos)
+        #     xpos +=
+
     def display_note(self, staff, note, ndec=None):
+        """
+        Should be used in "SingleNote" Mode ONLY
+        :param staff:
+        :param note:
+        :param ndec:
+        :return:
+        """
         if staff == 'left':
             self._left_staff.display_note(note, ndec)
         elif staff == 'right':

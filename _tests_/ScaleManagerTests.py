@@ -1,4 +1,4 @@
-from src.Note import Note
+from src.NotesAndRests import Note
 from src.ScaleManager import ScaleManager
 from src.Arpeggiator import Arpeggiator
 

@@ -1,6 +1,9 @@
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
+from fractions import Fraction
+
+from src.NotesAndRests import Note, Rest
 
 COLOR_LOW = '#ff8b00'
 COLOR_HIGH = '#ff1e00'
@@ -17,9 +20,13 @@ class Staff(QWidget):
         :param kind: either "SingleNote" / "SheetMusic"
         """
         super(Staff, self).__init__(flags=Qt.Widget)
-        self.notes = []
+        self.notes_and_rests = []
         self.ndec = None
         self.kind = kind
+
+        self._time_signature = (None, None)
+        # self._current_bar = 0
+        self._current_pos = Fraction(0, 1)
 
         self.qimages = {
             'sharp': QImage('res/sharp.png'),
@@ -33,14 +40,24 @@ class Staff(QWidget):
         """inter-line height"""
         return self.height() * INTER_LINE_HEIGHT
 
+    def display_bar(self, bar):
+        self._time_signature = bar.get_time_signature()
+        self.notes_and_rests = bar.get_notes_and_rests()
+        self._current_pos = 0
+        self.update()
+
+    def set_bar_pos(self, pos_frac):
+        self._current_pos = pos_frac
+        self.update()
+
     def display_note(self, note, ndec=None, update=True):
-        self.notes = [note]
+        self.notes_and_rests = [note]
         self.ndec = ndec
         if update:
             self.update()
 
     def erase_note(self, update=True):
-        self.notes = []
+        self.notes_and_rests = []
         self.ndec = None
         if update:
             self.update()
@@ -72,14 +89,44 @@ class Staff(QWidget):
         clef_ypos = int(_vcenter - (clef_h / 2))
         qp.drawImage(QRect(clef_xpos, clef_ypos, clef_w, clef_h), self.qimages['g-clef'])
 
+    def _get_xlims(self):
+        clef_h = int(self.il() * 8)
+        clef_w = int(clef_h * (self.qimages['g-clef'].width() / self.qimages['g-clef'].height()))
+        _xmin = int(clef_w + 10 + 10)
+        _xmax = int(self.width() - 20)
+        return _xmin, _xmax
+
     def _paint_notes(self, qp):
-        xdec = 0
-        for note in self.notes:
-            if note is not None:
-                self._paint_note(qp, note=note, xdec=xdec)
-            else:
-                print('Error, note is none')
-            xdec += 50
+        # 'SingleNote' display mode
+        if self._time_signature == (None, None):
+            if len(self.notes_and_rests) != 1:
+                print('ERROR: Staff._paint_notes() | len(notes and rests) != 1')
+                return
+            self._paint_note(qp, note=self.notes_and_rests[0], xpos=0.5)
+
+        # 'SheetMusic' display mode
+        else:
+            xdec_frac = Fraction(0, 1)
+            for note_or_rest in self.notes_and_rests:
+                if type(note_or_rest) is Note:
+                    self._paint_note(qp, note_or_rest, xpos=float(xdec_frac))
+                    xdec_frac += note_or_rest.length
+                    #print('DEBUG: Staff._paint_notes() | paiting NOTE')
+                # elif type(note_or_rest) is Rest:
+                #     #print('DEBUG: Staff._paint_notes() | paiting REST')
+                # else:
+                #     #print('ERROR: Staff._paint_notes() | UNKNOWN TYPE')
+                # if note_or_rest is not None:
+                #     self._paint_note(qp, note=note, xdec=0)
+                # else:
+                #     print('Error, note is none')
+
+    # def _paint_arrow(self, qp):
+    #     """
+    #     paints an arrow bellow the current note that we have to play
+    #     :param qp:
+    #     :return:
+    #     """
 
     def _note_color(self):
         if self.ndec is not None:
@@ -92,12 +139,22 @@ class Staff(QWidget):
 
         return QColor(COLOR_NORMAL)
 
-    def _paint_note(self, qp, note, xdec):
+    def _paint_note(self, qp, note, xpos=0.5):
+        """
+
+        :param qp:
+        :param note:
+        :param xpos: between 0 -> 1
+        :return:
+        """
         # pre-computing note position and color
         lh = self.il()
         w = self.width()
         _vcenter = int(0.6 * self.height())
-        note_center_xpos = int(xdec + (w / 2) - (1.25 * lh / 2))
+        # note_center_xpos = int(xpos * w - (1.25 * lh / 2))
+        _xmin, _xmax = self._get_xlims()
+        note_width = (1.25 * lh)
+        note_center_xpos = int(_xmin + xpos * (_xmax - _xmin) + note_width / 2)
         note_center_ypos = int(_vcenter - (note.b_index * lh/2) - (lh/2))
         note_color = self._note_color()
 
@@ -108,7 +165,7 @@ class Staff(QWidget):
             for ydec in range(lower_bar, -5, 2):
                 note_ypos = int(_vcenter - (ydec * lh/2))
                 xpos_l = int(note_center_xpos - (0.5 * lh)) - 1
-                xpos_r = int(note_center_xpos + (1.25 * lh) + (0.5 * lh)) + 1
+                xpos_r = int(note_center_xpos + note_width + (0.5 * lh)) + 1
                 qp.drawLine(xpos_l, note_ypos, xpos_r, note_ypos)
         elif note.b_index >= 6:
             higher_bar = note.b_index - (note.b_index % 2)
@@ -116,24 +173,26 @@ class Staff(QWidget):
             for ydec in range(higher_bar, 5, -2):
                 note_ypos = int(_vcenter - (ydec * lh/2))
                 xpos_l = int(note_center_xpos - (0.5 * lh)) - 1
-                xpos_r = int(note_center_xpos + (1.25 * lh) + (0.5 * lh)) + 1
+                xpos_r = int(note_center_xpos + note_width + (0.5 * lh)) + 1
                 qp.drawLine(xpos_l, note_ypos, xpos_r, note_ypos)
 
         # note core
         qp.setPen(note_color)
         qp.setBrush(note_color)
-        qp.drawEllipse(note_center_xpos, note_center_ypos, int(1.25 * lh), int(lh))
+        qp.drawEllipse(note_center_xpos, note_center_ypos, note_width, int(lh))
 
         # note's vertical bar
         if note.b_index > 0:
             qp.setPen(note_color)
-            bar_xpos = int(xdec + (w / 2) - (1.25 * lh / 2))
+            # bar_xpos = int(xpos + (w / 2) - (1.25 * lh / 2))
+            bar_xpos = note_center_xpos
             bar_ypos_a = int(_vcenter - (note.b_index * lh/2))
             bar_ypos_b = int(bar_ypos_a + (3.5 * lh))
             qp.drawLine(bar_xpos, bar_ypos_a, bar_xpos, bar_ypos_b)
         else:
             qp.setPen(note_color)
-            bar_xpos = int(xdec + (w / 2) + (1.25 * lh / 2))
+            # bar_xpos = int(xpos + (w / 2) + (1.25 * lh / 2))
+            bar_xpos = note_center_xpos + note_width
             bar_ypos_a = int(_vcenter - (note.b_index * lh / 2))
             bar_ypos_b = int(bar_ypos_a - (3.5 * lh))
             qp.drawLine(bar_xpos, bar_ypos_a, bar_xpos, bar_ypos_b)

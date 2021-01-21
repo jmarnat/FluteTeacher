@@ -5,13 +5,11 @@ Here is an animated GIF of the actual version running:
 ![Animation](doc_res/animation-v0.7-test2.gif?raw=true)
 
 ## To-do list (by decreasing priority):
-### Fingerings:
-
-### Timer:
-- [ ] Add a practicing timer??
 ### Staffs:
 - [ ] add view choices : single / continuous
   - [ ] add corresponding GUI option
+### Timer:
+- [ ] Add a practicing timer??
 ### Help popup:
 - [ ] Make a Help popup window explaining How To
 - [ ] Add corresponding MenuBar item
