@@ -12,7 +12,10 @@ INTER_LINE_HEIGHT = 0.06
 
 
 class Staff(QWidget):
-    def __init__(self, kind='normal'):
+    def __init__(self, kind='SingleNote'):
+        """
+        :param kind: either "SingleNote" / "SheetMusic"
+        """
         super(Staff, self).__init__(flags=Qt.Widget)
         self.notes = []
         self.ndec = None
@@ -25,9 +28,6 @@ class Staff(QWidget):
             'double-sharp': QImage('res/double-sharp.png'),
             'double-flat': QImage('res/double-flat.png'),
         }
-
-    # def mid_height(self):
-    #     return self.height() / 2
 
     def il(self):
         """inter-line height"""

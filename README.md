@@ -6,9 +6,7 @@ Here is an animated GIF of the actual version running:
 
 ## To-do list (by decreasing priority):
 ### Fingerings:
-- [ ] Split classes to:
-  - Fingerings (= controls, ...)
-  - FingeringsWidget
+
 ### Timer:
 - [ ] Add a practicing timer??
 ### Staffs:

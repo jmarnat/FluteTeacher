@@ -25,6 +25,21 @@ class MenuBar(QMenuBar):
         self._base_note_letter = Settings.DEFAULT_BASE_NOTE_LETTER
         self._base_note_alteration = Settings.DEFAULT_BASE_NOTE_ALTERATION
         self._start_from_oct = Settings.DEFAULT_BASE_NOTE_OCTAVE
+        self._training_mode = Settings.START_IN_MODE
+
+        self._menu_training_mode = self.addMenu('Training Mode')
+        self._menu_training_mode_qactions = {}
+        for training_mode, training_mode_str in {
+            'SingleNote': 'Single Note (dual view)',
+            'SheetMusic': 'Sheet music'
+        }.items():
+            _qaction = QAction(training_mode_str)
+            _qaction.triggered.connect(partial(self.set_training_mode, training_mode))
+            _qaction.setCheckable(True)
+            if training_mode == self._training_mode:
+                _qaction.setChecked(True)
+            self._menu_training_mode.addAction(_qaction)
+            self._menu_training_mode_qactions[training_mode] = _qaction
 
         # --------------------------------------------- SCALES AND MODES --------------------------------------------- #
         self._menu_scales = self.addMenu('Scales and Modes')
@@ -155,6 +170,18 @@ class MenuBar(QMenuBar):
         _qaaction_about = QAction(" &About FluteTeacher", self._menu_help)
         _qaaction_about.triggered.connect(partial(self.show_about))
         self._menu_help.addAction(_qaaction_about)
+
+    def set_training_mode(self, training_mode):
+        """
+        :param training_mode: either 'SingleNote' or 'SheetMusic'
+        """
+        print('Setting training mode to {}'.format(training_mode))
+        self._training_mode = training_mode
+        for _training_mode, _qaction in self._menu_training_mode_qactions.items():
+            if _training_mode == self._training_mode:
+                _qaction.setChecked(True)
+            else:
+                _qaction.setChecked(False)
 
     def set_training_scale(self, scale_name, mode):
         try:
@@ -291,11 +318,21 @@ class MainWindow(QMainWindow):
         self._top_row_layout = QHBoxLayout()
         self._top_row.setLayout(self._top_row_layout)
 
-        self._left_staff = Staff(kind='normal')
-        self._top_row_layout.addWidget(self._left_staff)
+        self._left_staff = None
+        self._right_staff = None
+        self._sheet_music = None
 
-        self._right_staff = Staff(kind='normal')
-        self._top_row_layout.addWidget(self._right_staff)
+        if self._ft.get_training_mode() == 'SingleNote':
+            self._left_staff = Staff(kind='SingleNote')
+            self._top_row_layout.addWidget(self._left_staff)
+
+            self._right_staff = Staff(kind='SingleNote')
+            self._top_row_layout.addWidget(self._right_staff)
+        elif self._ft.get_training_mode() == 'SheetMusic':
+            self._sheet_music = Staff(kind='SheetMusic')
+            self._top_row_layout.addWidget(self._sheet_music)
+        else:
+            print('ERROR: no training mode named "{}"'.format(self._training_mode))
 
         # SECOND ROW
         self.fingering = Fingerings()

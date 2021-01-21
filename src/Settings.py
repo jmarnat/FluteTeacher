@@ -3,6 +3,9 @@ from src.Alteration import *
 
 
 class Settings:
+    # START_IN_MODE = 'SheetMusic'
+    START_IN_MODE = 'SingleNote'
+
     # ------------------ LISTENING AND AUTONEXT AT STARTUP ------------------- #
     START_LISTENING_AT_STARTUP = True
     START_AUTONEXT_AT_STARTUP = False

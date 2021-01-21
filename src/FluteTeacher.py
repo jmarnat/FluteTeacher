@@ -21,7 +21,7 @@ class FluteTeacher:
         self._heard_note = None
         self._listening = Settings.START_LISTENING_AT_STARTUP
         self._autonext = Settings.START_AUTONEXT_AT_STARTUP
-        #-- self._start_octave = Settings.DEFAULT_BASE_NOTE_OCTAVE
+        self._training_mode = Settings.START_IN_MODE
 
         # MAIN WINDOW
         self._main_window = MainWindow(flute_teacher=self)
@@ -44,6 +44,9 @@ class FluteTeacher:
             self.set_autonext(True)
         if self._listening:
             self.start_listening()
+
+    def get_training_mode(self):
+        return self._training_mode
 
     def is_autonext(self):
         return self._autonext

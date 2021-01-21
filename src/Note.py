@@ -3,6 +3,17 @@ import random
 from src.Alteration import Alteration, Alterations
 
 
+class Rests:
+    QUARTER_REST = 4
+    HAFL_REST = 2
+    WHOLE_REST = 8
+
+
+class Rest:
+    def __init__(self, duration=Rests.QUARTER_REST):
+        self.duration = duration
+
+
 class Note:
     """
     - note_number = note indice like MIDI (C4 = 60)
@@ -18,15 +29,20 @@ class Note:
     NOTE_DECAYS = {'C': 0, 'D': 2, 'E': 4, 'F': 5, 'G': 7, 'A': 9, 'B': 11}
     PURE_INTERVALS = {1: 0, 2: 2, 3: 4, 4: 5, 5: 7, 6: 9, 7: 11, 8: 12}
 
-    def __init__(self, letter='C', octave=4, alteration=Alterations.NATURAL):
+    HALF_NOTE = 1/2
+    QUARTER_NOTE = 1/4
+
+    def __init__(self, letter='C', octave=4, alteration=Alterations.NATURAL, length=QUARTER_NOTE):
         """
         :param letter: should be A -> G
         :param octave: ideally 4 -> 6~7
         :param alteration: from class Alteration
+        :param length: Note.HAFL_NOTE / Note.QUARTER_NOTE / ...
         """
         self.letter = letter
         self.octave = octave
         self.alteration = alteration
+        self.length = length
 
         self.midi_code = Note._get_midi_code(letter, octave, alteration)
 
